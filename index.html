@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+  <!-- DOC: CABECERA: título de la pestaña (title), codificación y adaptación a celulares. Más abajo se cargan las fuentes de Google y las hojas de estilo. El ORDEN importa: style.css va último para poder pisar a las demás. -->
   <head>
-    <title>DirEngine - Free Bootstrap 4 Template by Colorlib</title>
+    <title>Vertigo | Excursiones extremas</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
@@ -25,10 +26,12 @@
     
     <link rel="stylesheet" href="css/flaticon.css">
     <link rel="stylesheet" href="css/icomoon.css">
+    <!-- DOC: style.css = hoja de estilos PRINCIPAL de la plantilla (colores, tipografías, componentes). Para cambiar el aspecto se edita este archivo; el color de marca es #f85959 (rojo coral). Al comienzo del archivo hay una guía de contenidos. -->
     <link rel="stylesheet" href="css/style.css">
   </head>
   <body>
     
+  <!-- DOC: MENÚ DE NAVEGACIÓN (barra superior). Para agregar una página al menú: copiar un li con clase nav-item y cambiar href y texto. La página actual lleva la clase "active". El ícono del carrito lo agrega solo js/carrito.js. El menú se repite igual en todas las páginas. -->
   <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
     <div class="container">
       <a class="navbar-brand" href="index.html">Vertigo.</a>
@@ -50,6 +53,7 @@
   </nav>
     <!-- END nav -->
     
+    <!-- DOC: PORTADA (HERO): imagen grande de fondo con título. Para cambiar la foto se modifica el url(images/...) del style. js-fullheight = ocupa toda la altura de la pantalla (lo calcula main.js). El texto chico de arriba (breadcrumbs) es la ruta de páginas. -->
     <div class="hero-wrap js-fullheight" style="background-image: url('images/paracaidas-2.jpg');">
       <div class="overlay"></div>
       <div class="container">
@@ -58,6 +62,7 @@
             <h1 class="mb-4" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }"><strong>Explorá <br></strong> tu próxima aventura</h1>
             <p data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">Descubrí lugares increíbles, viví experiencias únicas y disfrutá de excursiones llenas de adrenalina junto a guías especializados.</p>
             <div class="block-17 my-4">
+              <!-- DOC: BUSCADOR de la portada (tipo de aventura, fecha, etc.). Hoy es solo visual: no envía nada. Para que funcione hay que ponerle name= a cada campo y action= a un PHP. -->
               <form action="" method="post" class="d-block d-flex">
                 <div class="fields d-block d-flex">
                   <div class="textfield-search one-third">
@@ -98,6 +103,7 @@
       </div>
     </div>
 
+    <!-- DOC: SECCIÓN SERVICIOS: 4 bloques con ícono, título y texto corto. Los íconos son clases flaticon-* (css/flaticon.css). -->
     <section class="ftco-section services-section bg-light">
       <div class="container">
         <div class="row d-flex">
@@ -141,6 +147,7 @@
       </div>
     </section>
     
+    <!-- DOC: SECCIÓN AVENTURAS DESTACADAS: carrusel (clase destination-slider owl-carousel), configurado en main.js, función carousel(). Cada excursión es un div con clase item; para agregar una, copiar uno completo. -->
     <section class="ftco-section ftco-destination">
     	<div class="container">
     		<div class="row justify-content-start mb-5 pb-3">
@@ -236,6 +243,7 @@
     	</div>
     </section>
 
+    <!-- DOC: SECCIÓN MEJORES PAQUETES: grilla de tarjetas de excursiones (imagen, nombre, estrellas, precio, descripción). Para agregar una: copiar una columna col-md-4 completa. -->
     <section class="ftco-section bg-light">
     	<div class="container">
 				<div class="row justify-content-start mb-5 pb-3">
@@ -421,6 +429,7 @@
     	</div>
     </section>
 
+    <!-- DOC: SECCIÓN CONTADORES: números que se animan al llegar con el scroll. El valor final está en data-number de cada strong. Lo anima main.js, función counter(). -->
     <section class="ftco-section ftco-counter img" id="section-counter" style="background-image: url(images/bg_1.jpg);">
     	<div class="container">
     		<div class="row justify-content-center mb-5 pb-3">
@@ -476,6 +485,7 @@
 				<div class="row justify-content-start mb-5 pb-3">
           <div class="col-md-7 heading-section ftco-animate">
           	<span class="subheading">Ofertas Especiales</span>
+            <!-- DOC: TÍTULO de la sección de hoteles y habitaciones (las tarjetas siguen abajo). -->
             <h2 class="mb-4"><strong>Populares</strong> Hoteles y Habitaciones</h2>
           </div>
         </div>    		
@@ -506,7 +516,7 @@
 	    							<span class="price per-price">$40<br><small>/night</small></span>
     							</div>
     						</div>
-    						<p>Far far away, behind the word mountains, far from the countries</p>
+    						<p>Recibí en tu correo nuestras mejores ofertas, novedades y excursiones extremas antes que nadie.</p>
     						<hr>
     						<p class="bottom-area d-flex">
     							<span><i class="icon-map-o"></i> Miami, Fl</span> 
@@ -651,6 +661,7 @@
     	</div>
     </section>
 
+    <!-- DOC: SECCIÓN TESTIMONIOS: a la izquierda "por qué elegirnos" (texto) y a la derecha un carrusel de opiniones (clase carousel-testimony, configurado en main.js). -->
     <section class="ftco-section testimony-section bg-light">
       <div class="container">
         <div class="row justify-content-start">
@@ -723,6 +734,7 @@
 				<div class="row justify-content-start mb-5 pb-3">
           <div class="col-md-7 heading-section ftco-animate">
           	<span class="subheading">Ofertas Especiales</span>
+            <!-- DOC: TÍTULO de la sección de restaurantes (las tarjetas siguen abajo). -->
             <h2 class="mb-4"><strong>Los Mejores </strong> Restaurantes</h2>
           </div>
         </div>    		
@@ -839,6 +851,7 @@
       <div class="container">
         <div class="row justify-content-start mb-5 pb-3">
           <div class="col-md-7 heading-section ftco-animate">
+            <!-- DOC: SECCIÓN BLOG: 4 notas recientes (clase blog-entry). Cada una enlaza a blog-single.html. -->
             <span class="subheading">Articulos Recientes </span>
             <h2><strong>Tips</strong> y consejos</h2>
           </div>
@@ -908,13 +921,14 @@
       </div>
     </section>
 		
+		<!-- DOC: SECCIÓN NEWSLETTER: fondo con efecto parallax y formulario de suscripción por email (hoy solo visual, no envía nada). -->
 		<section class="ftco-section-parallax">
       <div class="parallax-img d-flex align-items-center">
         <div class="container">
           <div class="row d-flex justify-content-center">
             <div class="col-md-7 text-center heading-section heading-section-white ftco-animate">
               <h2>Subscribete a nuestro boletin</h2>
-              <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in</p>
+              <p>Recibí en tu correo nuestras mejores ofertas, novedades y excursiones extremas antes que nadie.</p>
               <div class="row d-flex justify-content-center mt-5">
                 <div class="col-md-8">
                   <form action="#" class="subscribe-form">
@@ -931,6 +945,7 @@
       </div>
     </section>
 
+    <!-- DOC: PIE DE PÁGINA: 4 columnas (marca, información, soporte, contacto). Es IGUAL en todas las páginas: si se cambia un dato (teléfono, dirección, redes) hay que cambiarlo en cada archivo .html. -->
     <footer class="ftco-footer ftco-bg-dark ftco-section">
       <div class="container">
         <div class="row mb-5">
@@ -986,9 +1001,7 @@
         <div class="row">
           <div class="col-md-12 text-center">
 
-            <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-  Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-  <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
+            <p>Copyright &copy;<script>document.write(new Date().getFullYear());</script> Vertigo. Todos los derechos reservados.</p>
           </div>
         </div>
       </div>
@@ -996,10 +1009,12 @@
     
   
 
+  <!-- DOC: PANTALLA DE CARGA: círculo giratorio que ocupa toda la pantalla; main.js lo oculta (quita la clase "show") cuando la página terminó de cargar. -->
   <!-- loader -->
   <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
 
 
+  <!-- DOC: SCRIPTS: jQuery y los plugins de la plantilla (carrusel, animaciones al hacer scroll, calendario, contadores). El ORDEN importa: cada uno depende de los anteriores. Al final main.js los inicializa y carrito.js agrega el carrito. -->
   <script src="js/jquery.min.js"></script>
   <script src="js/jquery-migrate-3.0.1.min.js"></script>
   <script src="js/popper.min.js"></script>
@@ -1014,9 +1029,14 @@
   <script src="js/bootstrap-datepicker.js"></script>
   <script src="js/jquery.timepicker.min.js"></script>
   <script src="js/scrollax.min.js"></script>
+  <!-- DOC: MAPA DE GOOGLE: solo se usa en contact.html (div id="map"). La clave (key=) es de la plantilla: para producción hay que reemplazarla por una propia, y conviene quitar estas dos líneas de las páginas que no tienen mapa (generan un error en consola). -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
   <script src="js/google-map.js"></script>
+  <!-- DOC: main.js: inicializa todos los plugins de la plantilla (ver comentarios dentro de ese archivo). carrito.js (debajo) es el carrito de compras, propio del proyecto. -->
   <script src="js/main.js"></script>
+  <script src="js/datos.js"></script>
+  <script src="js/sesion.js"></script>
+  <script src="js/carrito.js"></script>
     
   </body>
 </html>

@@ -1,0 +1,44 @@
+/* DOCUMENTACIÓN - admin.css: ajustes propios del panel, encima de main.css (tema Spark Admin).
+   Acá van solo las clases que la plantilla no trae: ventanas modales, avisos, filas de ítems, etc. */
+
+/* Modales de Bootstrap con el estilo del panel */
+.modal-content { border: 0; border-radius: var(--radius-xl); box-shadow: 0 20px 60px rgba(5, 28, 18, .25); }
+.modal-header { border-bottom: 1px solid var(--border-light); padding: 1.25rem 1.5rem; }
+.modal-title { font-weight: 700; font-size: 1.1rem; color: var(--text-main); }
+.modal-body { padding: 1.5rem; }
+.modal-footer { border-top: 1px solid var(--border-light); padding: 1rem 1.5rem; gap: .5rem; }
+
+/* Campos en grilla dentro de los formularios */
+.campo { margin-bottom: 1rem; }
+.campo .msg-error { color: var(--sys-red); font-size: .75rem; margin-top: .25rem; }
+.form-control-custom.is-invalid-custom + .msg-error, .form-select-custom.is-invalid-custom + .msg-error { display: block; }
+
+/* Aviso flotante (toast) */
+#avisos { position: fixed; right: 20px; bottom: 20px; z-index: 2000; display: flex; flex-direction: column; gap: .5rem; }
+.aviso { background: var(--brand-forest-dark); color: #fff; padding: .75rem 1.1rem; border-radius: var(--radius-md); font-size: .875rem; box-shadow: var(--shadow-sm); animation: aviso-in .2s ease; }
+.aviso.error { background: var(--sys-red); }
+@keyframes aviso-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* Filas de excursión dentro de "Nueva reserva" */
+.fila-item { display: flex; gap: .5rem; align-items: center; margin-bottom: .5rem; }
+.fila-item .form-select-custom { flex: 1; min-width: 0; }
+.fila-item .form-control-custom { width: 90px; flex: none; }
+
+/* Imagen miniatura en la tabla de excursiones */
+.mini-foto { width: 44px; height: 44px; border-radius: var(--radius-md); background: #ddd center / cover no-repeat; flex: none; }
+
+/* Texto atenuado y tabla vacía */
+.texto-suave { color: var(--text-muted-green); font-size: .8125rem; }
+.sin-datos { text-align: center; padding: 2.5rem 1rem; color: var(--text-muted-green); }
+
+/* Estado "cancelada/inactiva" con la insignia roja de la plantilla */
+.badge-table.gris { background: #eef0ef; color: #6c7e75; }
+.badge-table.gris::before { background: #6c7e75; }
+
+/* Detalle (modal de pedido / usuario) */
+.detalle-fila { display: flex; justify-content: space-between; gap: 1rem; padding: .45rem 0; border-bottom: 1px dashed var(--border-light); font-size: .875rem; }
+.detalle-fila:last-child { border-bottom: 0; }
+.detalle-fila span:first-child { color: var(--text-muted-green); }
+
+.pestanas { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.pestanas .btn-custom.activa { background: var(--brand-forest-medium); color: #fff; border-color: var(--brand-forest-medium); }

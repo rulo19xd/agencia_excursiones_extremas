@@ -1,0 +1,57 @@
+/* DOCUMENTACIÓN - login.css: estilos de login.html (ingreso y registro).
+   Color de marca: #f85959. Fondo: foto con capa oscura. Todo el diseño está en esta hoja,
+   no depende de style.css. */
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: "Poppins", Arial, sans-serif; color: #222; }
+
+/* Fondo: imagen + capa oscura. Para cambiar la foto, editar el url(...) */
+.auth-wrap {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px 16px;
+  background: linear-gradient(rgba(0, 0, 0, .55), rgba(0, 0, 0, .55)), url('../images/bg_2.jpg') center / cover no-repeat;
+}
+.auth-card {
+  width: 100%; max-width: 440px; background: #fff; border-radius: 16px; padding: 34px 32px 26px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
+}
+.auth-brand { display: block; text-align: center; font-size: 30px; font-weight: 700; color: #000; text-decoration: none; letter-spacing: -.5px; }
+.auth-sub { text-align: center; color: #777; font-size: 14px; margin: 6px 0 22px; }
+
+/* Pestañas Ingresar / Crear cuenta */
+.auth-tabs { display: flex; background: #f3f3f3; border-radius: 10px; padding: 4px; margin-bottom: 22px; }
+.auth-tab { flex: 1; border: 0; background: none; padding: 9px; border-radius: 8px; font: 500 14px "Poppins", sans-serif; color: #777; cursor: pointer; transition: all .2s; }
+.auth-tab.active { background: #fff; color: #000; box-shadow: 0 1px 4px rgba(0, 0, 0, .12); }
+
+/* Campos */
+.auth-row { display: flex; gap: 12px; }
+.auth-row .auth-field { flex: 1; min-width: 0; }
+.auth-field { margin-bottom: 14px; }
+.auth-field label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 5px; color: #444; }
+.auth-field small { color: #999; font-weight: 400; }
+.auth-field input {
+  width: 100%; height: 46px; padding: 0 14px; border: 1px solid #ddd; border-radius: 10px;
+  font: 400 14px "Poppins", sans-serif; color: #222; background: #fff; transition: border-color .15s, box-shadow .15s;
+}
+.auth-field input:focus { outline: none; border-color: #f85959; box-shadow: 0 0 0 3px rgba(248, 89, 89, .15); }
+.auth-field.invalid input { border-color: #dc3545; }
+.auth-error { color: #dc3545; font-size: 12px; margin-top: 4px; min-height: 0; }
+.auth-pass { position: relative; }
+.auth-pass input { padding-right: 46px; }
+.auth-eye { position: absolute; right: 4px; top: 4px; width: 38px; height: 38px; border: 0; background: none; cursor: pointer; font-size: 22px; color: #888; }
+
+.auth-alert { background: #fdecea; color: #b02a37; border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 14px; }
+.auth-alert[hidden], form[hidden] { display: none; }
+
+.auth-btn {
+  width: 100%; height: 48px; border: 1px solid #f85959; border-radius: 10px; background: #f85959; color: #fff;
+  font: 600 15px "Poppins", sans-serif; cursor: pointer; transition: all .2s;
+}
+.auth-btn:hover { background: transparent; color: #f85959; }
+.auth-btn:disabled { opacity: .6; cursor: default; }
+.auth-back { display: block; text-align: center; margin-top: 18px; font-size: 13px; color: #888; text-decoration: none; }
+.auth-back:hover { color: #f85959; }
+
+@media (max-width: 480px) {
+  .auth-card { padding: 26px 20px 20px; }
+  .auth-row { flex-direction: column; gap: 0; }
+}

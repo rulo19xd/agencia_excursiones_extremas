@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservas | Vertigo Admin</title>
+  <link rel="icon" type="image/png" href="assets/images/favicon.ico">
+  <link rel="stylesheet" href="assets/libs/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/libs/bootstrap-icons/bootstrap-icons.css">
+  <link rel="stylesheet" href="assets/libs/apexcharts/apexcharts.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
+  <!-- DOC: ORDEN IMPORTANTE. datos.js (datos simulados) y layout.js (acceso solo para administradores + menú) se cargan en el head, antes de dibujar la página. -->
+  <script src="../js/datos.js"></script>
+  <script src="assets/js/layout.js"></script>
+</head>
+<body data-pagina="pedidos" data-titulo="Reservas" data-subtitulo="Todas las compras del sitio y las reservas cargadas por el equipo.">
+
+  <div id="acciones"><button class="btn-custom btn-custom-primary" id="btn-nueva"><i class="bi bi-plus-lg"></i> Nueva reserva</button></div>
+  <div id="contenido">
+    <!-- DOC: TABLA. Buscador y filtro arriba; las filas las dibuja admin.js dentro de #tabla-cuerpo (una fila por registro). Los botones de cada fila usan data-acc para indicar la acción. -->
+    <div class="table-card-custom">
+      <div class="table-header-control">
+        <div class="table-search-box"><i class="bi bi-search table-search-icon"></i>
+          <input type="text" class="table-search-input" id="buscar" placeholder="Buscar por código o cliente..."></div>
+        <div class="table-filter-group"><select class="form-select-custom form-control-custom-sm" id="filtro-estado" aria-label="Filtrar por estado"><option value="">Todos los estados</option><option value="1">Pendientes</option><option value="2">Pagadas</option><option value="3">Canceladas</option></select></div>
+      </div>
+      <div class="table-responsive">
+        <table class="table-custom">
+          <thead><tr><th>Código</th><th>Cliente</th><th>Excursiones</th><th>Total</th><th>Fecha</th><th>Estado</th><th><span class="d-block text-center">Acciones</span></th></tr></thead>
+          <tbody id="tabla-cuerpo"></tbody>
+        </table>
+      </div>
+      <div class="table-footer-control"><span class="table-pagination-info" id="cuenta"></span></div>
+    </div>
+  </div>
+
+  <!-- DOC: Librerías (Bootstrap para modales y menús, ApexCharts para gráficos) y la lógica de las pantallas (admin.js). admin.js elige qué módulo ejecutar según data-pagina del body. -->
+  <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>

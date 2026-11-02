@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+  <!-- DOC: CABECERA: título de la pestaña (title), codificación y adaptación a celulares. Más abajo se cargan las fuentes de Google y las hojas de estilo. El ORDEN importa: style.css va último para poder pisar a las demás. -->
   <head>
-    <title>DirEngine - Free Bootstrap 4 Template by Colorlib</title>
+    <title>Blog | Vertigo</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
@@ -25,15 +26,17 @@
     
     <link rel="stylesheet" href="css/flaticon.css">
     <link rel="stylesheet" href="css/icomoon.css">
+    <!-- DOC: style.css = hoja de estilos PRINCIPAL de la plantilla (colores, tipografías, componentes). Para cambiar el aspecto se edita este archivo; el color de marca es #f85959 (rojo coral). Al comienzo del archivo hay una guía de contenidos. -->
     <link rel="stylesheet" href="css/style.css">
   </head>
   <body>
     
+  <!-- DOC: MENÚ DE NAVEGACIÓN (barra superior). Para agregar una página al menú: copiar un li con clase nav-item y cambiar href y texto. La página actual lleva la clase "active". El ícono del carrito lo agrega solo js/carrito.js. El menú se repite igual en todas las páginas. -->
   <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
     <div class="container">
       <a class="navbar-brand" href="index.html">Vertigo.</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="oi oi-menu"></span> Menu
+        <span class="oi oi-menu"></span>
       </button>
 
       <div class="collapse navbar-collapse" id="ftco-nav">
@@ -44,13 +47,13 @@
           <li class="nav-item"><a href="hotel.html" class="nav-link">Alojamiento</a></li>
           <li class="nav-item active"><a href="blog.html" class="nav-link">Blog</a></li>
           <li class="nav-item"><a href="contact.html" class="nav-link">Contacto</a></li>
-          <li class="nav-item cta"><a href="contact.html" class="nav-link"><span>Add listing</span></a></li>
         </ul>
       </div>
     </div>
   </nav>
     <!-- END nav -->
     
+    <!-- DOC: PORTADA (HERO): imagen grande de fondo con título. Para cambiar la foto se modifica el url(images/...) del style. js-fullheight = ocupa toda la altura de la pantalla (lo calcula main.js). El texto chico de arriba (breadcrumbs) es la ruta de páginas. -->
     <div class="hero-wrap js-fullheight" style="background-image: url('images/blog_1.jpg');">
       <div class="overlay"></div>
       <div class="container">
@@ -64,6 +67,7 @@
     </div>
 
 
+    <!-- DOC: NOTA DEL BLOG: a la izquierda el artículo, los comentarios y el formulario de comentario; a la derecha la barra lateral (buscador, categorías, notas populares, etiquetas). -->
     <section class="ftco-section ftco-degree-bg">
       <div class="container">
         <div class="row">
@@ -185,6 +189,7 @@
                   </div>
                 </li>
               </ul>
+              <!-- DOC: FIN DE LA LISTA DE COMENTARIOS (sigue el formulario para dejar uno nuevo, hoy solo visual). -->
               <!-- END comment-list -->
               
               <div class="comment-form-wrap pt-5">
@@ -216,6 +221,7 @@
             </div>
 
           </div> <!-- .col-md-8 -->
+          <!-- DOC: BARRA LATERAL del blog. -->
           <div class="col-md-4 sidebar ftco-animate">
             <div class="sidebar-box">
               <form action="#" class="search-form">
@@ -298,6 +304,7 @@
       </div>
     </section> <!-- .section -->
 
+    <!-- DOC: PIE DE PÁGINA: 4 columnas (marca, información, soporte, contacto). Es IGUAL en todas las páginas: si se cambia un dato (teléfono, dirección, redes) hay que cambiarlo en cada archivo .html. -->
     <footer class="ftco-footer ftco-bg-dark ftco-section">
       <div class="container">
         <div class="row mb-5">
@@ -353,9 +360,7 @@
         <div class="row">
           <div class="col-md-12 text-center">
 
-            <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-  Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-  <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
+            <p>Copyright &copy;<script>document.write(new Date().getFullYear());</script> Vertigo. Todos los derechos reservados.</p>
           </div>
         </div>
       </div>
@@ -363,10 +368,12 @@
     
   
 
+  <!-- DOC: PANTALLA DE CARGA: círculo giratorio que ocupa toda la pantalla; main.js lo oculta (quita la clase "show") cuando la página terminó de cargar. -->
   <!-- loader -->
   <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
 
 
+  <!-- DOC: SCRIPTS: jQuery y los plugins de la plantilla (carrusel, animaciones al hacer scroll, calendario, contadores). El ORDEN importa: cada uno depende de los anteriores. Al final main.js los inicializa y carrito.js agrega el carrito. -->
   <script src="js/jquery.min.js"></script>
   <script src="js/jquery-migrate-3.0.1.min.js"></script>
   <script src="js/popper.min.js"></script>
@@ -381,9 +388,14 @@
   <script src="js/bootstrap-datepicker.js"></script>
   <script src="js/jquery.timepicker.min.js"></script>
   <script src="js/scrollax.min.js"></script>
+  <!-- DOC: MAPA DE GOOGLE: solo se usa en contact.html (div id="map"). La clave (key=) es de la plantilla: para producción hay que reemplazarla por una propia, y conviene quitar estas dos líneas de las páginas que no tienen mapa (generan un error en consola). -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
   <script src="js/google-map.js"></script>
+  <!-- DOC: main.js: inicializa todos los plugins de la plantilla (ver comentarios dentro de ese archivo). carrito.js (debajo) es el carrito de compras, propio del proyecto. -->
   <script src="js/main.js"></script>
+  <script src="js/datos.js"></script>
+  <script src="js/sesion.js"></script>
+  <script src="js/carrito.js"></script>
     
   </body>
 </html>

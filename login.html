@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Ingresar | Vertigo</title>
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+  <link rel="stylesheet" href="css/ionicons.min.css">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+  <!-- DOC: PÁGINA DE INGRESO Y REGISTRO. Es la puerta de entrada del sitio: si el usuario es administrador, js/login.js lo manda automáticamente al panel (dashboard/index.html); si es cliente, vuelve a la página desde la que vino (o al inicio). Estilos en css/login.css. -->
+  <main class="auth-wrap">
+    <div class="auth-card">
+      <a href="index.html" class="auth-brand">Vertigo.</a>
+      <p class="auth-sub" id="auth-sub">Ingresá a tu cuenta para reservar tus excursiones</p>
+
+      <div class="auth-tabs" role="tablist">
+        <button type="button" class="auth-tab active" id="tab-ingresar" role="tab">Ingresar</button>
+        <button type="button" class="auth-tab" id="tab-crear" role="tab">Crear cuenta</button>
+      </div>
+
+      <!-- DOC: FORMULARIO DE INGRESO. Valida email y contraseña contra Datos.login() (js/datos.js). -->
+      <form id="form-ingresar" novalidate>
+        <div class="auth-field">
+          <label for="li-email">Email</label>
+          <input type="email" id="li-email" autocomplete="email" placeholder="nombre@correo.com">
+          <div class="auth-error"></div>
+        </div>
+        <div class="auth-field">
+          <label for="li-pass">Contraseña</label>
+          <div class="auth-pass">
+            <input type="password" id="li-pass" autocomplete="current-password" placeholder="Tu contraseña">
+            <button type="button" class="auth-eye" data-ver="li-pass" aria-label="Mostrar contraseña"><span class="ion-ios-eye"></span></button>
+          </div>
+          <div class="auth-error"></div>
+        </div>
+        <div class="auth-alert" id="li-alerta" hidden></div>
+        <button type="submit" class="auth-btn">Ingresar</button>
+      </form>
+
+      <!-- DOC: FORMULARIO DE REGISTRO. Crea una cuenta de CLIENTE (Datos.registrar). Los administradores se crean desde el panel, nunca desde acá. -->
+      <form id="form-crear" novalidate hidden>
+        <div class="auth-row">
+          <div class="auth-field">
+            <label for="cr-nombre">Nombre</label>
+            <input type="text" id="cr-nombre" autocomplete="given-name">
+            <div class="auth-error"></div>
+          </div>
+          <div class="auth-field">
+            <label for="cr-apellido">Apellido</label>
+            <input type="text" id="cr-apellido" autocomplete="family-name">
+            <div class="auth-error"></div>
+          </div>
+        </div>
+        <div class="auth-field">
+          <label for="cr-email">Email</label>
+          <input type="email" id="cr-email" autocomplete="email" placeholder="nombre@correo.com">
+          <div class="auth-error"></div>
+        </div>
+        <div class="auth-row">
+          <div class="auth-field">
+            <label for="cr-tel">Teléfono <small>(opcional)</small></label>
+            <input type="tel" id="cr-tel" autocomplete="tel">
+            <div class="auth-error"></div>
+          </div>
+          <div class="auth-field">
+            <label for="cr-dni">DNI <small>(opcional)</small></label>
+            <input type="text" id="cr-dni" inputmode="numeric" maxlength="10">
+            <div class="auth-error"></div>
+          </div>
+        </div>
+        <div class="auth-field">
+          <label for="cr-pass">Contraseña</label>
+          <div class="auth-pass">
+            <input type="password" id="cr-pass" autocomplete="new-password" placeholder="Mínimo 4 caracteres">
+            <button type="button" class="auth-eye" data-ver="cr-pass" aria-label="Mostrar contraseña"><span class="ion-ios-eye"></span></button>
+          </div>
+          <div class="auth-error"></div>
+        </div>
+        <div class="auth-alert" id="cr-alerta" hidden></div>
+        <button type="submit" class="auth-btn">Crear cuenta</button>
+      </form>
+
+      <a href="index.html" class="auth-back">&larr; Volver al sitio</a>
+    </div>
+  </main>
+
+  <script src="js/datos.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

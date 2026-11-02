@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resumen | Vertigo Admin</title>
+  <link rel="icon" type="image/png" href="assets/images/favicon.ico">
+  <link rel="stylesheet" href="assets/libs/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/libs/bootstrap-icons/bootstrap-icons.css">
+  <link rel="stylesheet" href="assets/libs/apexcharts/apexcharts.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
+  <!-- DOC: ORDEN IMPORTANTE. datos.js (datos simulados) y layout.js (acceso solo para administradores + menú) se cargan en el head, antes de dibujar la página. -->
+  <script src="../js/datos.js"></script>
+  <script src="assets/js/layout.js"></script>
+</head>
+<body data-pagina="index" data-titulo="Resumen" data-subtitulo="Un vistazo a las reservas, los ingresos y la ocupación de tus excursiones.">
+
+  <!-- DOC: RESUMEN. Los números y gráficos se calculan en admin.js (paginas.index) a partir de las tablas pedidos, excursiones y usuarios. -->
+  <div id="contenido">
+    <div class="row g-4">
+      <div class="col-md-6 col-xl-3"><div class="card card-stat"><div class="card-header"><span class="stat-label">Ingresos (reservas pagadas)</span></div>
+        <div class="stat-value" id="st-ingresos">-</div><div class="trend-badge trend-up" id="st-ingresos-var"></div></div></div>
+      <div class="col-md-6 col-xl-3"><div class="card card-stat"><div class="card-header"><span class="stat-label">Reservas</span></div>
+        <div class="stat-value" id="st-pedidos">-</div><div class="trend-badge" style="background:var(--sys-orange-bg);color:var(--sys-orange)"><i class="bi bi-hourglass-split"></i> <span id="st-pendientes"></span></div></div></div>
+      <div class="col-md-6 col-xl-3"><div class="card card-stat"><div class="card-header"><span class="stat-label">Excursiones activas</span></div>
+        <div class="stat-value" id="st-excursiones">-</div><a href="excursiones.html" class="texto-suave text-decoration-none">Gestionar excursiones &rarr;</a></div></div>
+      <div class="col-md-6 col-xl-3"><div class="card alert-green-card"><div class="position-relative z-index-2">
+        <span class="alert-green-badge">Clientes</span><div class="alert-green-date">Cuentas registradas</div><div class="stat-value text-white" id="st-clientes">-</div></div>
+        <a href="usuarios.html" class="alert-green-link z-index-2"><span>Ver usuarios</span><i class="bi bi-arrow-right"></i></a></div></div>
+
+      <div class="col-xl-8">
+        <div class="card mb-4"><div class="card-header"><h2 class="card-title">Ingresos por mes</h2></div><div id="grafico-ingresos"></div></div>
+        <div class="table-card-custom"><div class="table-header-control"><h2 class="card-title mb-0">Últimas reservas</h2><a href="pedidos.html" class="btn-table-action text-decoration-none">Ver todas</a></div>
+          <div class="table-responsive"><table class="table-custom"><thead><tr><th>Código</th><th>Cliente</th><th>Total</th><th>Fecha</th><th>Estado</th></tr></thead><tbody id="tabla-ultimas"></tbody></table></div></div>
+      </div>
+      <div class="col-xl-4">
+        <div class="card mb-4"><div class="card-header"><h2 class="card-title">Personas por tipo</h2></div><div id="grafico-tipos"></div></div>
+        <div class="card"><div class="card-header"><h2 class="card-title">Ocupación</h2></div><div id="ocupacion"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOC: Librerías (Bootstrap para modales y menús, ApexCharts para gráficos) y la lógica de las pantallas (admin.js). admin.js elige qué módulo ejecutar según data-pagina del body. -->
+  <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/libs/apexcharts/apexcharts.min.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>

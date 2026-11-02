@@ -1,0 +1,95 @@
+/* Carrito de Vertigo. Color de marca de la plantilla: #f85959 (coral) */
+
+/* botón del navbar */
+.cart-btn { position: relative; display: inline-flex; align-items: center; }
+.cart-btn svg { display: block; }
+.cart-badge {
+  position: absolute; top: 2px; right: -2px;
+  min-width: 18px; height: 18px; padding: 0 5px;
+  border-radius: 9px; background: #f85959; color: #fff;
+  font-size: 11px; font-weight: 600; line-height: 18px; text-align: center;
+}
+.cart-badge[hidden] { display: none; }
+
+/* panel lateral */
+.cart-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, .5);
+  opacity: 0; visibility: hidden; transition: opacity .25s; z-index: 1040;
+}
+.cart-overlay.open { opacity: 1; visibility: visible; }
+.cart-panel {
+  position: fixed; top: 0; right: 0; bottom: 0; width: 400px; max-width: 100%;
+  background: #fff; z-index: 1050; display: flex; flex-direction: column;
+  transform: translateX(100%); transition: transform .3s ease;
+  box-shadow: -8px 0 30px rgba(0, 0, 0, .2);
+}
+.cart-panel.open { transform: none; }
+.cart-panel header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 22px; border-bottom: 1px solid #eee;
+}
+.cart-panel header h3 { margin: 0; font-size: 20px; }
+.cart-close { background: none; border: 0; font-size: 30px; line-height: 1; cursor: pointer; color: #666; }
+.cart-body { flex: 1; overflow-y: auto; padding: 8px 22px; }
+.cart-panel footer { padding: 18px 22px; border-top: 1px solid #eee; }
+.cart-panel footer:empty { display: none; }
+.cart-total { display: flex; justify-content: space-between; font-size: 18px; margin-bottom: 14px; }
+body.cart-lock { overflow: hidden; }
+
+/* filas (panel y página) */
+.cart-list { list-style: none; margin: 0; padding: 0; }
+.cart-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 0; border-bottom: 1px solid #eee;
+}
+.cart-item:last-child { border-bottom: 0; }
+.cart-item-img {
+  flex: 0 0 64px; height: 64px; border-radius: 8px;
+  background: #ddd center / cover no-repeat;
+}
+.cart-item-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.cart-item-info strong { font-size: 15px; color: #000; }
+.cart-item-info small { color: #888; }
+.cart-item-side { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.cart-item-total { font-weight: 600; color: #000; white-space: nowrap; }
+.cart-remove { background: none; border: 0; font-size: 22px; line-height: 1; color: #aaa; cursor: pointer; }
+.cart-remove:hover { color: #dc3545; }
+
+.cart-qty { display: inline-flex; align-items: center; margin-top: 6px; }
+.cart-qty button {
+  width: 28px; height: 28px; border: 1px solid #ddd; background: #fff;
+  border-radius: 50%; cursor: pointer; line-height: 1; color: #333;
+}
+.cart-qty button:hover { border-color: #f85959; color: #f85959; }
+.cart-qty span { min-width: 44px; text-align: center; font-size: 14px; }
+
+/* vacío */
+.cart-empty { text-align: center; padding: 50px 10px; color: #999; }
+.cart-empty p { margin: 12px 0 20px; font-size: 18px; }
+
+/* botón en tarjetas */
+.cart-add { transition: transform .15s; }
+.cart-add.added { transform: scale(.96); }
+
+/* aviso */
+.cart-toast {
+  position: fixed; left: 50%; bottom: 28px; z-index: 1060;
+  transform: translate(-50%, 20px); opacity: 0; pointer-events: none;
+  background: #212529; color: #fff; padding: 12px 22px; border-radius: 30px;
+  font-size: 14px; transition: all .25s;
+}
+.cart-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* página carrito.html */
+.cart-list-page { background: #fff; border-radius: 8px; box-shadow: 0 2px 16px rgba(0, 0, 0, .06); padding: 6px 22px; }
+.cart-list-page .cart-item-img { flex-basis: 90px; height: 90px; }
+.cart-summary { background: #f8f9fa; border-radius: 8px; padding: 24px; position: sticky; top: 90px; }
+.cart-summary h4 { margin-bottom: 18px; }
+.cart-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.cart-row-total { font-size: 20px; color: #000; }
+
+@media (max-width: 575px) {
+  .cart-list-page { padding: 4px 14px; }
+  .cart-list-page .cart-item { flex-wrap: wrap; }
+  .cart-list-page .cart-item-img { flex-basis: 64px; height: 64px; }
+}

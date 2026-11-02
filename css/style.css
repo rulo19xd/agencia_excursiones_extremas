@@ -1,3 +1,62 @@
+/*
+ * ============================================================================
+ *  GUÍA DEL ARCHIVO style.css  (documentación en español)
+ * ============================================================================
+ *  Este archivo está COMPILADO desde scss/style.scss + Bootstrap 4.1.0, por eso
+ *  es muy largo (más de 9000 líneas). Para cambiar algo, usar Ctrl+F con el
+ *  nombre de la clase (se indican abajo) en vez de leerlo entero.
+ *  Los números de línea son aproximados (pueden correrse unas líneas).
+ *
+ *  PARTE 1  (líneas ~94 a ~7319)  -> BOOTSTRAP 4.1.0, sin modificar
+ *      Grilla (.container, .row, .col-md-4), botones, formularios, tarjetas,
+ *      menú, paginación, utilidades (.bg-light, .d-flex, .mb-4, .text-center...).
+ *      No conviene editar esta parte: si hace falta cambiar algo, se pisa en la PARTE 2.
+ *
+ *  PARTE 2  (líneas ~7329 en adelante) -> ESTILOS PROPIOS DE LA PLANTILLA
+ *      body ................... tipografía base (Poppins) y color del texto
+ *      .ftco-navbar-light ..... barra de menú; .scrolled / .awake / .sleep = estados al hacer scroll
+ *      .owl-carousel .......... carruseles (flechas, puntos)
+ *      .bg-light, .btn.btn-primary  fondos y botón principal
+ *      .hero-wrap ............. portada con imagen de fondo; .breadcrumbs = ruta de páginas
+ *      .services .............. bloques de íconos de "Servicios"
+ *      .destination ........... tarjeta de excursión (imagen, precio, estrellas)
+ *      .hotel-img / .hotel-single  tarjetas y ficha de alojamiento
+ *      .ftco-section-parallax / .subscribe-form  banda del newsletter
+ *      .ftco-animate .......... estado inicial de los bloques que se animan al scroll
+ *      .ftco-section .......... espaciado general de cada sección de la página
+ *      .ftco-footer ........... pie de página
+ *      .heading-section ....... títulos de sección (subheading + h2)
+ *      .testimony-section ..... testimonios; .about-image = foto de "Sobre nosotros"
+ *      .ftco-counter .......... contadores de "Nuestra experiencia"
+ *      .block-20 / .blog-entry  tarjetas del blog
+ *      .block-27 .............. paginación (1 2 3...)
+ *      .block-23 / .block-17   datos de contacto del footer / buscador de la portada
+ *      .contact-section / .block-9  página de contacto y su formulario
+ *      .comment-list .......... comentarios del blog
+ *      .sidebar-wrap / .sidebar-box  barras laterales de filtros y del blog
+ *      .rate i ................ estrellas de calificación
+ *      #ftco-loader ........... pantalla de carga
+ *
+ *  COLORES PRINCIPALES
+ *      #f85959  coral/rojo  -> color de marca (botones, precios, detalles). Es la variable $primary
+ *                              de scss/style.scss (línea 11); en este archivo aparece escrito a mano,
+ *                              así que para cambiarlo de golpe usar "Reemplazar todo" de #f85959.
+ *      #000 / #212529       -> textos oscuros y barra de menú
+ *      #f8f9fa              -> fondo gris claro de secciones alternadas (.bg-light)
+ *
+ *  TIPOGRAFÍAS: Poppins (todo el sitio) y Alex Brush (títulos decorativos). Se cargan
+ *      desde Google Fonts en el <head> de cada página.
+ *
+ *  ÍCONOS: css/icomoon.css (icon-*), css/flaticon.css (flaticon-*), css/ionicons.min.css (ion-*),
+ *      css/open-iconic-bootstrap.min.css (oi oi-menu).
+ *
+ *  OTROS ESTILOS DEL PROYECTO (no de la plantilla): css/carrito.css y css/checkout.css.
+ *
+ *  SI SE EDITA scss/style.scss: hay que recompilarlo (la plantilla usa el programa Prepros,
+ *  ver prepros-6.config). Si no se usa Prepros, editar directamente este .css y dejar
+ *  de tocar el .scss para no desincronizarlos.
+ * ============================================================================
+ */
 /*!
  * Bootstrap v4.1.0 (https://getbootstrap.com/)
  * Copyright 2011-2018 The Bootstrap Authors
@@ -9339,3 +9398,20 @@ textarea.form-control {
   100% {
     stroke-dasharray: 89, 200;
     stroke-dashoffset: -136px; } }
+
+
+.navbar-toggler {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  width: 44px;
+  height: 36px;
+}
+
+.navbar-toggler .oi,
+.navbar-toggler span {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tipos y lugares | Vertigo Admin</title>
+  <link rel="icon" type="image/png" href="assets/images/favicon.ico">
+  <link rel="stylesheet" href="assets/libs/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/libs/bootstrap-icons/bootstrap-icons.css">
+  <link rel="stylesheet" href="assets/libs/apexcharts/apexcharts.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
+  <!-- DOC: ORDEN IMPORTANTE. datos.js (datos simulados) y layout.js (acceso solo para administradores + menú) se cargan en el head, antes de dibujar la página. -->
+  <script src="../js/datos.js"></script>
+  <script src="assets/js/layout.js"></script>
+</head>
+<body data-pagina="catalogos" data-titulo="Tipos y lugares" data-subtitulo="Listas de apoyo: tipos de excursión, países, provincias y ciudades.">
+
+  <div id="acciones"><button class="btn-custom btn-custom-primary" id="btn-nueva"><i class="bi bi-plus-lg"></i> Agregar</button></div>
+  <div id="contenido">
+    <!-- DOC: Pestañas para elegir qué lista editar. Cada una corresponde a una tabla de apoyo de la base (ver CAT en admin.js, paginas.catalogos). -->
+    <div class="pestanas" id="pestanas"></div>
+    <div class="table-card-custom">
+      <div class="table-header-control"><h2 class="card-title mb-0" id="cat-titulo"></h2></div>
+      <div class="table-responsive"><table class="table-custom"><thead><tr id="cat-cabecera"></tr></thead><tbody id="tabla-cuerpo"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- DOC: Librerías (Bootstrap para modales y menús, ApexCharts para gráficos) y la lógica de las pantallas (admin.js). admin.js elige qué módulo ejecutar según data-pagina del body. -->
+  <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>
