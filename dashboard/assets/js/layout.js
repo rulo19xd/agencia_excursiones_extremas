@@ -38,6 +38,7 @@
     ['Gestión', [
       ['excursiones', 'Excursiones', 'excursiones.html', 'bi-compass'],
       ['pedidos', 'Reservas', 'pedidos.html', 'bi-receipt'],
+      ['cobros', 'Cobros', 'cobros.html', 'bi-cash-coin'],
       ['usuarios', 'Usuarios', 'usuarios.html', 'bi-people']
     ]],
     ['Configuración', [

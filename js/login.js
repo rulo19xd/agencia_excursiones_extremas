@@ -7,6 +7,7 @@
  *       cliente       -> la página indicada en ?volver=... o index.html
  * - Crear cuenta: valida, llama a Datos.registrar() (siempre crea un CLIENTE),
  *   inicia sesión y redirige igual que arriba.
+ * - Recuperar contraseña: formulario con email + DNI/teléfono + contraseña nueva (sin correo).
  * - Si ya hay una sesión abierta, redirige directo (un admin nunca ve el login).
  *
  * CUANDO HAYA BACKEND: Datos.login/registrar se reemplazan por fetch('login.php')
@@ -37,16 +38,20 @@
   // ---------- pestañas ----------
   function mostrar(modo) {
     var ingresar = modo === 'ingresar';
+    var recuperar = modo === 'recuperar';
     $('form-ingresar').hidden = !ingresar;
-    $('form-crear').hidden = ingresar;
+    $('form-crear').hidden = modo !== 'crear';
+    $('form-recuperar').hidden = !recuperar;
     $('tab-ingresar').classList.toggle('active', ingresar);
-    $('tab-crear').classList.toggle('active', !ingresar);
+    $('tab-crear').classList.toggle('active', modo === 'crear');
     $('auth-sub').textContent = ingresar
       ? 'Ingresá a tu cuenta para reservar tus excursiones'
-      : 'Creá tu cuenta y empezá a reservar';
+      : recuperar ? 'Recuperá el acceso a tu cuenta' : 'Creá tu cuenta y empezá a reservar';
   }
   $('tab-ingresar').addEventListener('click', function () { mostrar('ingresar'); });
   $('tab-crear').addEventListener('click', function () { mostrar('crear'); });
+  $('ir-recuperar').addEventListener('click', function (e) { e.preventDefault(); mostrar('recuperar'); });
+  $('volver-ingresar').addEventListener('click', function (e) { e.preventDefault(); mostrar('ingresar'); });
 
   // Ojito para ver la contraseña
   document.querySelectorAll('.auth-eye').forEach(function (b) {
@@ -65,6 +70,7 @@
   function limpiar(form) {
     form.querySelectorAll('.auth-field').forEach(function (c) { c.classList.remove('invalid'); c.querySelector('.auth-error').textContent = ''; });
     form.querySelectorAll('.auth-alert').forEach(function (a) { a.hidden = true; });
+    form.querySelectorAll('.auth-ok').forEach(function (a) { a.hidden = true; });
   }
   var emailOk = function (s) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s); };
 
@@ -84,6 +90,28 @@
       return;
     }
     redirigir(u);
+  });
+
+  // ---------- recuperar contraseña ----------
+  // Sin correo: se confirma la identidad con el DNI o el teléfono guardados en la cuenta.
+  // El servidor limita los intentos fallidos (5 y se bloquea unos minutos).
+  $('form-recuperar').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var f = e.target; limpiar(f);
+    var ok = true;
+    var email = $('rc-email').value.trim(), dato = $('rc-dato').value.replace(/\D/g, ''), pass = $('rc-pass').value;
+    if (!emailOk(email)) { error('rc-email', 'Ingresá un email válido'); ok = false; }
+    if (dato.length < 6) { error('rc-dato', 'Ingresá tu DNI o teléfono (solo números)'); ok = false; }
+    if (pass.length < 4) { error('rc-pass', 'Mínimo 4 caracteres'); ok = false; }
+    if (!ok) return;
+
+    var r = Datos.recuperarPassword(email, dato, pass);
+    if (r.error) { $('rc-alerta').textContent = r.error; $('rc-alerta').hidden = false; return; }
+    f.reset();
+    mostrar('ingresar');
+    $('li-email').value = email;
+    $('li-ok').textContent = 'Listo: cambiaste tu contraseña. Ya podés ingresar.';
+    $('li-ok').hidden = false;
   });
 
   // ---------- crear cuenta ----------

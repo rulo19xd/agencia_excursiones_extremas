@@ -36,7 +36,36 @@
           <div class="auth-error"></div>
         </div>
         <div class="auth-alert" id="li-alerta" hidden></div>
+        <div class="auth-ok" id="li-ok" hidden></div>
         <button type="submit" class="auth-btn">Ingresar</button>
+        <a href="#" class="auth-link" id="ir-recuperar">¿Olvidaste tu contraseña?</a>
+      </form>
+
+      <!-- DOC: RECUPERAR CONTRASEÑA (sin correo). El cliente confirma su identidad con el email y su DNI o teléfono
+           cargados al registrarse; si coinciden, elige una contraseña nueva (Datos.recuperarPassword -> api/recuperar.php). -->
+      <form id="form-recuperar" novalidate hidden>
+        <p class="auth-help">Ingresá tu email y tu DNI <em>o</em> teléfono (el que cargaste al crear la cuenta) y elegí una contraseña nueva.</p>
+        <div class="auth-field">
+          <label for="rc-email">Email</label>
+          <input type="email" id="rc-email" autocomplete="email" placeholder="nombre@correo.com">
+          <div class="auth-error"></div>
+        </div>
+        <div class="auth-field">
+          <label for="rc-dato">DNI o teléfono</label>
+          <input type="text" id="rc-dato" autocomplete="off" placeholder="Solo números">
+          <div class="auth-error"></div>
+        </div>
+        <div class="auth-field">
+          <label for="rc-pass">Contraseña nueva</label>
+          <div class="auth-pass">
+            <input type="password" id="rc-pass" autocomplete="new-password" placeholder="Mínimo 4 caracteres">
+            <button type="button" class="auth-eye" data-ver="rc-pass" aria-label="Mostrar contraseña"><span class="ion-ios-eye"></span></button>
+          </div>
+          <div class="auth-error"></div>
+        </div>
+        <div class="auth-alert" id="rc-alerta" hidden></div>
+        <button type="submit" class="auth-btn">Cambiar contraseña</button>
+        <a href="#" class="auth-link" id="volver-ingresar">&larr; Volver a ingresar</a>
       </form>
 
       <!-- DOC: FORMULARIO DE REGISTRO. Crea una cuenta de CLIENTE (Datos.registrar). Los administradores se crean desde el panel, nunca desde acá. -->

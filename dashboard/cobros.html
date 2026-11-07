@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cobros | Vertigo Admin</title>
+  <link rel="icon" type="image/png" href="assets/images/favicon.ico">
+  <link rel="stylesheet" href="assets/libs/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/libs/bootstrap-icons/bootstrap-icons.css">
+  <link rel="stylesheet" href="assets/libs/apexcharts/apexcharts.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
+  <!-- DOC: ORDEN IMPORTANTE. datos.js (datos simulados) y layout.js (acceso solo para administradores + menú) se cargan en el head, antes de dibujar la página. -->
+  <script src="../js/datos.js"></script>
+  <script src="assets/js/layout.js"></script>
+</head>
+<body data-pagina="cobros" data-titulo="Cobros" data-subtitulo="Registro de todo el dinero que entró (cobros) y salió (reembolsos).">
+
+  <div id="acciones"><a class="btn-custom btn-custom-primary" href="pedidos.html"><i class="bi bi-receipt"></i> Ir a Reservas</a></div>
+  <div id="contenido">
+    <!-- DOC: COBROS. Una fila por movimiento de la tabla pagos: los cobros suman y los reembolsos (monto negativo, se generan solos al cancelar una reserva pagada) restan. Los cobros nuevos se registran desde Reservas (botón de la moneda). -->
+    <div class="row g-3 mb-3">
+      <div class="col-md-4"><div class="table-card-custom p-3"><div class="texto-suave">Cobrado</div><div class="h4 mb-0" id="tot-cobrado">$ 0</div></div></div>
+      <div class="col-md-4"><div class="table-card-custom p-3"><div class="texto-suave">Reembolsado</div><div class="h4 mb-0 text-danger" id="tot-reembolsado">$ 0</div></div></div>
+      <div class="col-md-4"><div class="table-card-custom p-3"><div class="texto-suave">Neto</div><div class="h4 mb-0" id="tot-neto">$ 0</div></div></div>
+    </div>
+    <div class="table-card-custom">
+      <div class="table-header-control" style="flex-wrap:wrap;gap:10px">
+        <div class="table-search-box"><i class="bi bi-search table-search-icon"></i>
+          <input type="text" class="table-search-input" id="buscar" placeholder="Buscar por reserva, cliente o nota..."></div>
+        <div class="table-filter-group" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+          <select class="form-select-custom form-control-custom-sm" id="filtro-tipo" style="width:auto;min-width:170px" aria-label="Cobros o reembolsos"><option value="">Cobros y reembolsos</option><option value="cobro">Solo cobros</option><option value="reembolso">Solo reembolsos</option></select>
+          <select class="form-select-custom form-control-custom-sm" id="filtro-metodo" style="width:auto;min-width:170px" aria-label="Método"></select>
+          <label class="texto-suave mb-0">Desde <input type="date" class="form-control-custom form-control-custom-sm" id="filtro-desde" style="width:auto;display:inline-block"></label>
+          <label class="texto-suave mb-0">Hasta <input type="date" class="form-control-custom form-control-custom-sm" id="filtro-hasta" style="width:auto;display:inline-block"></label>
+          <button type="button" class="btn-custom btn-custom-outline-secondary btn-custom-sm" id="filtro-limpiar"><i class="bi bi-x-lg"></i> Limpiar</button>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table-custom">
+          <thead><tr><th>Fecha</th><th>Reserva</th><th>Cliente</th><th>Método</th><th>Tipo</th><th>Monto</th></tr></thead>
+          <tbody id="tabla-cuerpo"></tbody>
+        </table>
+      </div>
+      <div class="table-footer-control"><span class="table-pagination-info" id="cuenta"></span></div>
+    </div>
+  </div>
+
+  <!-- DOC: Librerías (Bootstrap para modales y menús, ApexCharts para gráficos) y la lógica de las pantallas (admin.js). admin.js elige qué módulo ejecutar según data-pagina del body. -->
+  <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>

@@ -18,16 +18,24 @@
 
   <div id="acciones"><button class="btn-custom btn-custom-primary" id="btn-nueva"><i class="bi bi-plus-lg"></i> Nueva reserva</button></div>
   <div id="contenido">
-    <!-- DOC: TABLA. Buscador y filtro arriba; las filas las dibuja admin.js dentro de #tabla-cuerpo (una fila por registro). Los botones de cada fila usan data-acc para indicar la acción. -->
+    <!-- DOC: TABLA. Buscador y filtros arriba (texto, estado, cobro, excursión y rango de fechas de la reserva); las filas las dibuja admin.js dentro de #tabla-cuerpo (una fila por registro). Los botones de cada fila usan data-acc para indicar la acción. -->
     <div class="table-card-custom">
-      <div class="table-header-control">
+      <div class="table-header-control" style="flex-wrap:wrap;gap:10px">
         <div class="table-search-box"><i class="bi bi-search table-search-icon"></i>
-          <input type="text" class="table-search-input" id="buscar" placeholder="Buscar por código o cliente..."></div>
-        <div class="table-filter-group"><select class="form-select-custom form-control-custom-sm" id="filtro-estado" aria-label="Filtrar por estado"><option value="">Todos los estados</option><option value="1">Pendientes</option><option value="2">Pagadas</option><option value="3">Canceladas</option></select></div>
+          <input type="text" class="table-search-input" id="buscar" placeholder="Buscar por código, cliente o email..."></div>
+        <div class="table-filter-group" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+          <select class="form-select-custom form-control-custom-sm" id="filtro-estado" style="width:auto;min-width:170px" aria-label="Filtrar por estado"><option value="">Todos los estados</option><option value="1">Pendientes</option><option value="2">Pagadas</option><option value="3">Canceladas</option></select>
+          <select class="form-select-custom form-control-custom-sm" id="filtro-cobro" style="width:auto;min-width:170px" aria-label="Filtrar por cobro"><option value="">Todos los cobros</option><option value="sin">Sin cobrar</option><option value="parcial">Cobro parcial</option><option value="completo">Cobrado completo</option></select>
+          <select class="form-select-custom form-control-custom-sm" id="filtro-excursion" style="width:auto;min-width:170px" aria-label="Filtrar por excursión"></select>
+          <label class="texto-suave mb-0">Desde <input type="date" class="form-control-custom form-control-custom-sm" id="filtro-desde" style="width:auto;display:inline-block"></label>
+          <label class="texto-suave mb-0">Hasta <input type="date" class="form-control-custom form-control-custom-sm" id="filtro-hasta" style="width:auto;display:inline-block"></label>
+          <button type="button" class="btn-custom btn-custom-outline-secondary btn-custom-sm" id="filtro-limpiar"><i class="bi bi-x-lg"></i> Limpiar</button>
+          <button type="button" class="btn-custom btn-custom-outline-secondary btn-custom-sm" id="btn-borrar-canceladas" title="Elimina las reservas canceladas que se ven con los filtros actuales"><i class="bi bi-trash"></i> Eliminar canceladas</button>
+        </div>
       </div>
       <div class="table-responsive">
         <table class="table-custom">
-          <thead><tr><th>Código</th><th>Cliente</th><th>Excursiones</th><th>Total</th><th>Fecha</th><th>Estado</th><th><span class="d-block text-center">Acciones</span></th></tr></thead>
+          <thead><tr><th>Código</th><th>Cliente</th><th>Excursiones</th><th>Total</th><th>Cobrado</th><th>Fecha</th><th>Estado</th><th><span class="d-block text-center">Acciones</span></th></tr></thead>
           <tbody id="tabla-cuerpo"></tbody>
         </table>
       </div>

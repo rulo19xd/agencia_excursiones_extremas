@@ -1,7 +1,7 @@
 /*
  * DOCUMENTACIÓN - range.js (slider doble de precio de los filtros)
  *
- * Controla el bloque ".range-slider" de tour.html / hotel.html: dos barras (mínimo y máximo)
+ * Controla el bloque ".range-slider" de las páginas de excursiones: dos barras (mínimo y máximo)
  * y dos casillas numéricas que se mantienen sincronizadas. Si se mueve una barra, se actualiza
  * la casilla y al revés. Si el mínimo supera al máximo, se intercambian.
  *

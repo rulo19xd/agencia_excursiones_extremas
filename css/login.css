@@ -40,7 +40,11 @@ body { margin: 0; font-family: "Poppins", Arial, sans-serif; color: #222; }
 .auth-eye { position: absolute; right: 4px; top: 4px; width: 38px; height: 38px; border: 0; background: none; cursor: pointer; font-size: 22px; color: #888; }
 
 .auth-alert { background: #fdecea; color: #b02a37; border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 14px; }
-.auth-alert[hidden], form[hidden] { display: none; }
+.auth-alert[hidden], .auth-ok[hidden], form[hidden] { display: none; }
+.auth-ok { background: #e6f4ea; color: #1e6b3a; border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 14px; }
+.auth-link { display: block; text-align: center; margin-top: 14px; font-size: 13px; color: #888; text-decoration: none; }
+.auth-link:hover { color: #f85959; }
+.auth-help { font-size: 13px; color: #666; margin-bottom: 14px; }
 
 .auth-btn {
   width: 100%; height: 48px; border: 1px solid #f85959; border-radius: 10px; background: #f85959; color: #fff;

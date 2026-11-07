@@ -16,9 +16,9 @@
  *   2. módulos           uno por pantalla (cada uno tiene su función pintar())
  *   3. arranque          elige el módulo según la página
  *
- * LOS DATOS vienen de js/datos.js (objeto Datos), que hoy simula la base de datos.
- * CUANDO HAYA BACKEND: las llamadas a Datos.* se reemplazan por fetch a PHP; el HTML que se
- * dibuja con cada fila no cambia.
+ * LOS DATOS vienen de js/datos.js (objeto Datos), que se conecta con la base MySQL a través
+ * de los PHP de api/. El servidor valida cada cambio (permisos, precios, lugares); si lo
+ * rechaza, datos.js muestra el motivo y la pantalla no muestra el aviso de "guardado".
  */
 (function () {
   'use strict';
@@ -116,6 +116,46 @@
   }
   function opcionesDe(tabla) { return Datos.tabla(tabla).map(function (f) { return [f.id, f.nombre]; }); }
 
+  // Métodos con los que el equipo registra un cobro (la misma lista que valida api/cobro.php)
+  var METODOS_COBRO = ['Efectivo', 'Transferencia', 'Tarjeta (posnet)', 'Otro'];
+  // Día (YYYY-MM-DD) de un valor guardado como "2026-11-06T21:16:34" o "2026-11-06 21:16:34"
+  function dia(v) { return String(v || '').slice(0, 10); }
+  // Dinero con signo: los reembolsos (negativos) se pintan en rojo
+  function montoHtml(n) { return '<span class="' + (n < 0 ? 'text-danger' : '') + '">' + dinero(n) + '</span>'; }
+  // Texto de un pago: "Visa ···· 4242", "Efectivo" o "Reembolso"
+  function textoPago(g) { return esc(g.marca) + (g.ultimos4 ? ' ···· ' + esc(g.ultimos4) : ''); }
+
+  // Ventana "Registrar cobro" (se usa desde Reservas). alTerminar() se llama si se guardó.
+  function abrirCobro(p, alTerminar) {
+    var mc = modal('m-cobro');
+    var saldo = Datos.saldoDe(p.id);
+    if (saldo <= 0) { aviso('Esta reserva no tiene saldo pendiente', 'error'); return; }
+    var cuerpo = '<form id="f-cobro" novalidate>' +
+      '<div class="detalle-fila"><span>Reserva</span><strong>' + esc(p.codigo) + ' · ' + esc(Datos.nombreUsuario(p.usuario_id)) + '</strong></div>' +
+      '<div class="detalle-fila"><span>Total</span><span>' + dinero(p.total) + '</span></div>' +
+      '<div class="detalle-fila"><span>Ya cobrado</span><span>' + dinero(Datos.cobradoDe(p.id)) + '</span></div>' +
+      '<div class="detalle-fila mb-3"><span><strong>Saldo pendiente</strong></span><strong>' + dinero(saldo) + '</strong></div>' +
+      selectHtml('c-metodo', 'Método de cobro', METODOS_COBRO.map(function (x) { return [x, x]; }), 'Efectivo') +
+      campo('c-monto', 'Monto cobrado ($)', 'number', saldo, 'min="1" max="' + saldo + '" step="0.01"') +
+      campo('c-nota', 'Nota (opcional: nº de comprobante, quién cobró...)', 'text', '', 'maxlength="200"') + '</form>';
+    mc.mostrar('Registrar cobro', cuerpo,
+      '<button type="button" class="btn-custom btn-custom-outline-secondary" data-bs-dismiss="modal">Cancelar</button>' +
+      '<button type="button" class="btn-custom btn-custom-primary" id="guardar-cobro">Registrar cobro</button>');
+    $('#guardar-cobro').onclick = function () {
+      var f = $('#f-cobro'); limpiarErrores(f);
+      var monto = Number($('#c-monto').value);
+      if (!(monto > 0)) { marcarError('c-monto', 'Ingresá un monto mayor a 0'); return; }
+      if (monto > saldo + 0.001) { marcarError('c-monto', 'El monto supera el saldo pendiente (' + dinero(saldo) + ')'); return; }
+      try {
+        Datos.registrarCobro({ pedido_id: p.id, metodo: $('#c-metodo').value, monto: monto, nota: $('#c-nota').value.trim() });
+      } catch (err) { aviso(err.message, 'error'); return; }
+      mc.cerrar();
+      var nuevo = Datos.buscar('pedidos', p.id);
+      aviso(nuevo.estado_id === Datos.ESTADO.PAGADA ? 'Cobro registrado: la reserva quedó pagada' : 'Cobro registrado');
+      if (alTerminar) alTerminar();
+    };
+  }
+
   // =====================================================================
   // 2. MÓDULOS (UNO POR PANTALLA)
   // =====================================================================
@@ -207,7 +247,7 @@
   // ---------------------------------------------------------------
   paginas.excursiones = function () {
     var m = modal('m-excursion', 'modal-lg');
-    var IMAGENES = ['destination-1', 'destination-2', 'destination-3', 'destination-4', 'destination-5', 'destination-6', 'hotel-1', 'hotel-2', 'hotel-3', 'bg_1', 'bg_2', 'bg_3', 'trekking-1', 'paracaidas-2']
+    var IMAGENES = ['destination-1', 'destination-2', 'destination-3', 'destination-4', 'destination-5', 'destination-6', 'bg_1', 'bg_2', 'bg_3', 'trekking-1', 'paracaidas-2']
       .map(function (n) { return 'images/' + n + '.jpg'; });
 
     function pintar() {
@@ -243,7 +283,12 @@
         '<div class="col-md-4">' + campo('f-capacidad', 'Capacidad (lugares)', 'number', e.capacidad, 'min="1" step="1"') + '</div>' +
         '<div class="col-md-4"><div class="campo"><label class="form-label-custom">Estado</label><label class="form-check-custom mt-2"><input class="form-check-input-custom" type="checkbox" id="f-activa"' + (e.activa ? ' checked' : '') + '> <span class="form-check-label">Visible en el sitio</span></label></div></div>' +
         '<div class="col-12">' + campo('f-imagen', 'Imagen (ruta dentro del sitio)', 'text', e.imagen, 'list="lista-imagenes" placeholder="images/destination-1.jpg"') +
-        '<datalist id="lista-imagenes">' + IMAGENES.map(function (i) { return '<option value="' + i + '">'; }).join('') + '</datalist></div></div></form>';
+        '<datalist id="lista-imagenes">' + IMAGENES.map(function (i) { return '<option value="' + i + '">'; }).join('') + '</datalist>' +
+        // Subir una imagen propia: se guarda en images/excursiones/ y su ruta se completa sola arriba
+        '<div class="d-flex align-items-center gap-3 mt-2"><div id="f-vista" class="mini-foto" style="width:64px;height:64px;background-image:url(\'' + esc(urlImagen(e.imagen)) + '\')"></div>' +
+        '<div class="flex-grow-1"><label class="form-label-custom" for="f-archivo">O subir una imagen (JPG, PNG, WEBP o GIF, máx. 5 MB)</label>' +
+        '<input type="file" class="form-control-custom" id="f-archivo" accept="image/jpeg,image/png,image/webp,image/gif"><div class="msg-error" hidden></div></div></div>' +
+        '</div></div></form>';
     }
 
     function abrirFormulario(e) {
@@ -251,6 +296,17 @@
         '<button type="button" class="btn-custom btn-custom-primary" id="guardar-excursion">Guardar</button>';
       m.mostrar(e ? 'Editar excursión' : 'Nueva excursión', formulario(e), pie);
       $('#guardar-excursion').onclick = function () { guardar(e); };
+      var vista = function () { $('#f-vista').style.backgroundImage = "url('" + urlImagen($('#f-imagen').value.trim()).replace(/'/g, '%27') + "')"; };
+      $('#f-imagen').addEventListener('input', vista);
+      $('#f-archivo').addEventListener('change', function () {
+        var arch = this.files && this.files[0]; if (!arch) return;
+        limpiarErrores($('#f-archivo').parentNode);
+        if (arch.size > 5 * 1024 * 1024) { marcarError('f-archivo', 'La imagen supera los 5 MB'); this.value = ''; return; }
+        try {
+          $('#f-imagen').value = Datos.subirImagen(arch);
+          vista(); aviso('Imagen subida');
+        } catch (err) { marcarError('f-archivo', err.message); this.value = ''; }
+      });
     }
 
     function guardar(e) {
@@ -261,6 +317,7 @@
       if (!(precio > 0)) { marcarError('f-precio', 'El precio debe ser mayor a 0'); ok = false; }
       if (!(cap > 0)) { marcarError('f-capacidad', 'La capacidad debe ser mayor a 0'); ok = false; }
       else if (e && cap < Datos.ocupados(e.id)) { marcarError('f-capacidad', 'Ya hay ' + Datos.ocupados(e.id) + ' lugares reservados'); ok = false; }
+      if (!$('#f-fecha').value) { marcarError('f-fecha', 'Ingresá la fecha de salida'); ok = false; }
       if (!ok) return;
       var datos = {
         nombre: nombre, descripcion: $('#f-desc').value.trim(), tipo_excursion_id: Number($('#f-tipo').value), ciudad_id: Number($('#f-ciudad').value),
@@ -302,24 +359,52 @@
       }).join('<br>');
     }
 
-    function pintar() {
+    // Selector de excursión del filtro: todas las que existen
+    $('#filtro-excursion').innerHTML = '<option value="">Todas las excursiones</option>' + Datos.tabla('excursiones').map(function (e) {
+      return '<option value="' + e.id + '">' + esc(e.nombre) + '</option>';
+    }).join('');
+
+    // Estado de cobro de una reserva: 'sin' (nada cobrado), 'parcial', 'completo'. Las canceladas no cuentan.
+    function estadoCobro(p) {
+      if (p.estado_id === Datos.ESTADO.CANCELADA) return 'cancelada';
+      var cobrado = Datos.cobradoDe(p.id);
+      return cobrado <= 0 ? 'sin' : (cobrado >= p.total ? 'completo' : 'parcial');
+    }
+
+    function filtradas() {
       var q = $('#buscar').value.trim().toLowerCase(), est = $('#filtro-estado').value;
-      var filas = Datos.tabla('pedidos').sort(function (a, b) { return b.creado_en.localeCompare(a.creado_en); }).filter(function (p) {
-        var texto = (p.codigo + ' ' + Datos.nombreUsuario(p.usuario_id)).toLowerCase();
-        return (!q || texto.indexOf(q) >= 0) && (est === '' || String(p.estado_id) === est);
+      var desde = $('#filtro-desde').value, hasta = $('#filtro-hasta').value;
+      var ex = $('#filtro-excursion').value, cobro = $('#filtro-cobro').value;
+      return Datos.tabla('pedidos').sort(function (a, b) { return b.creado_en.localeCompare(a.creado_en); }).filter(function (p) {
+        var texto = (p.codigo + ' ' + Datos.nombreUsuario(p.usuario_id) + ' ' + ((Datos.buscar('usuarios', p.usuario_id) || {}).email || '')).toLowerCase();
+        if (q && texto.indexOf(q) < 0) return false;
+        if (est !== '' && String(p.estado_id) !== est) return false;
+        if (desde && dia(p.creado_en) < desde) return false;
+        if (hasta && dia(p.creado_en) > hasta) return false;
+        if (ex && !Datos.itemsDe(p.id).some(function (it) { return String(it.excursion_id) === ex; })) return false;
+        if (cobro && estadoCobro(p) !== cobro) return false;
+        return true;
       });
-      $('#cuenta').textContent = filas.length + (filas.length === 1 ? ' reserva' : ' reservas');
+    }
+
+    function pintar() {
+      var filas = filtradas();
+      var cobradoTotal = filas.reduce(function (t, p) { return t + Datos.cobradoDe(p.id); }, 0);
+      $('#cuenta').textContent = filas.length + (filas.length === 1 ? ' reserva' : ' reservas') + ' · cobrado: ' + dinero(cobradoTotal);
       $('#tabla-cuerpo').innerHTML = filas.length ? filas.map(function (p) {
         var estado = Datos.nombreDe('estados_pedido', p.estado_id);
+        var cancelada = p.estado_id === Datos.ESTADO.CANCELADA, saldo = Datos.saldoDe(p.id);
+        var cobrado = Datos.cobradoDe(p.id);
+        var cobroHtml = dinero(cobrado) + (cancelada ? '' : (saldo > 0 ? '<div class="texto-suave">Falta ' + dinero(saldo) + '</div>' : ''));
         return '<tr data-id="' + p.id + '"><td class="table-order-id">' + esc(p.codigo) + '</td>' +
           '<td><div class="table-user-name">' + esc(Datos.nombreUsuario(p.usuario_id)) + '</div><div class="table-user-sub">' + (p.creado_por ? 'Cargada por ' + esc(Datos.nombreUsuario(p.creado_por)) : 'Compra en la web') + '</div></td>' +
-          '<td>' + resumenItems(p) + '</td><td class="table-amount">' + dinero(p.total) + '</td><td>' + fecha(p.creado_en) + '</td><td>' + badgePedido(estado) + '</td>' +
+          '<td>' + resumenItems(p) + '</td><td class="table-amount">' + dinero(p.total) + '</td><td>' + cobroHtml + '</td><td>' + fecha(p.creado_en) + '</td><td>' + badgePedido(estado) + '</td>' +
           '<td><div class="d-flex justify-content-center gap-1">' +
           '<a href="#" class="table-btn-action" data-acc="ver" title="Ver detalle"><i class="bi bi-eye"></i></a>' +
-          (p.estado_id !== Datos.ESTADO.PAGADA ? '<a href="#" class="table-btn-action" data-acc="pagada" title="Marcar como pagada"><i class="bi bi-check2-circle"></i></a>' : '') +
-          (p.estado_id !== Datos.ESTADO.CANCELADA ? '<a href="#" class="table-btn-action delete" data-acc="cancelada" title="Cancelar reserva"><i class="bi bi-x-circle"></i></a>' : '<a href="#" class="table-btn-action" data-acc="pendiente" title="Reabrir como pendiente"><i class="bi bi-arrow-counterclockwise"></i></a>') +
+          (!cancelada && saldo > 0 ? '<a href="#" class="table-btn-action" data-acc="cobro" title="Registrar cobro"><i class="bi bi-cash-coin"></i></a>' : '') +
+          (!cancelada ? '<a href="#" class="table-btn-action delete" data-acc="cancelada" title="Cancelar reserva"><i class="bi bi-x-circle"></i></a>' : '<a href="#" class="table-btn-action" data-acc="pendiente" title="Reabrir como pendiente"><i class="bi bi-arrow-counterclockwise"></i></a><a href="#" class="table-btn-action delete" data-acc="eliminar" title="Eliminar reserva cancelada"><i class="bi bi-trash"></i></a>') +
           '</div></td></tr>';
-      }).join('') : sinDatos(7, 'No hay reservas que coincidan');
+      }).join('') : sinDatos(8, 'No hay reservas que coincidan');
     }
 
     function verDetalle(p) {
@@ -329,8 +414,10 @@
         return '<div class="detalle-fila"><span>' + esc(ex ? ex.nombre : 'Excursión eliminada') + ' · ' + it.personas + ' pers. × ' + dinero(it.precio_unitario) + '</span><strong>' + dinero(it.personas * it.precio_unitario) + '</strong></div>';
       }).join('');
       var pagos = Datos.pagosDe(p.id).map(function (g) {
-        return '<div class="detalle-fila"><span>' + esc(g.marca) + ' ···· ' + esc(g.ultimos4) + ' · ' + fecha(g.creado_en) + '</span><span>' + (g.aprobado ? '<span class="badge-table success">Aprobado</span>' : '<span class="badge-table failed">Rechazado</span>') + ' ' + dinero(g.monto) + '</span></div>';
-      }).join('') || '<div class="texto-suave">Sin pago con tarjeta registrado.</div>';
+        return '<div class="detalle-fila"><span>' + textoPago(g) + ' · ' + fecha(g.creado_en) + (g.motivo ? '<div class="texto-suave">' + esc(g.motivo) + '</div>' : '') + '</span>' +
+          '<span>' + (g.aprobado ? '<span class="badge-table success">Aprobado</span>' : '<span class="badge-table failed">Rechazado</span>') + ' ' + montoHtml(Number(g.monto)) + '</span></div>';
+      }).join('') || '<div class="texto-suave">Todavía no hay cobros registrados.</div>';
+      var saldo = Datos.saldoDe(p.id);
       var html = '<div class="row g-4"><div class="col-md-5">' +
         '<div class="detalle-fila"><span>Código</span><strong>' + esc(p.codigo) + '</strong></div>' +
         '<div class="detalle-fila"><span>Estado</span>' + badgePedido(Datos.nombreDe('estados_pedido', p.estado_id)) + '</div>' +
@@ -341,8 +428,15 @@
         '<div class="detalle-fila"><span>Origen</span><span>' + (p.creado_por ? 'Cargada por ' + esc(Datos.nombreUsuario(p.creado_por)) : 'Compra en la web') + '</span></div></div>' +
         '<div class="col-md-7"><h6 class="mb-2">Excursiones</h6>' + items +
         '<div class="detalle-fila"><span><strong>Total</strong></span><strong>' + dinero(p.total) + '</strong></div>' +
-        '<h6 class="mt-3 mb-2">Pagos</h6>' + pagos + '</div></div>';
-      mDetalle.mostrar("Reserva " + p.codigo, html);
+        '<h6 class="mt-3 mb-2">Cobros</h6>' + pagos +
+        '<div class="detalle-fila"><span><strong>Cobrado</strong></span><strong>' + dinero(Datos.cobradoDe(p.id)) + '</strong></div>' +
+        (saldo > 0 ? '<div class="detalle-fila"><span>Saldo pendiente</span><strong>' + dinero(saldo) + '</strong></div>' : '') +
+        '</div></div>';
+      var pie = '<button type="button" class="btn-custom btn-custom-outline-secondary" data-bs-dismiss="modal">Cerrar</button>' +
+        (saldo > 0 ? '<button type="button" class="btn-custom btn-custom-primary" id="detalle-cobrar"><i class="bi bi-cash-coin"></i> Registrar cobro</button>' : '');
+      mDetalle.mostrar('Reserva ' + p.codigo, html, pie);
+      var bc = $('#detalle-cobrar');
+      if (bc) bc.onclick = function () { mDetalle.cerrar(); abrirCobro(p, pintar); };
     }
 
     // ----- Nueva reserva a nombre de un cliente -----
@@ -366,13 +460,15 @@
         .map(function (u) { return [u.id, u.nombre + ' ' + u.apellido + ' — ' + u.email]; });
       if (!clientes.length) { aviso('Primero creá un cliente en Usuarios', 'error'); return; }
       var cuerpo = '<form id="f-nueva" novalidate>' + selectHtml('n-cliente', 'Cliente', clientes, clientes[0][0]) +
-        selectHtml('n-estado', 'Estado inicial', [[Datos.ESTADO.PENDIENTE, 'Pendiente de pago'], [Datos.ESTADO.PAGADA, 'Pagada (cobrada en persona o transferencia)']], Datos.ESTADO.PENDIENTE) +
+        selectHtml('n-estado', 'Estado inicial', [[Datos.ESTADO.PENDIENTE, 'Pendiente de pago'], [Datos.ESTADO.PAGADA, 'Pagada (se registra el cobro completo)']], Datos.ESTADO.PENDIENTE) +
+        '<div id="n-metodo-caja" hidden>' + selectHtml('n-metodo', 'Método de cobro', METODOS_COBRO.map(function (x) { return [x, x]; }), 'Efectivo') + '</div>' +
         '<label class="form-label-custom">Excursiones</label><div id="items-nueva">' + filaItem() + '</div>' +
         '<a href="#" id="agregar-item" class="btn-custom btn-custom-light btn-custom-sm mt-1"><i class="bi bi-plus-lg"></i> Agregar otra excursión</a>' +
         '<div class="detalle-fila mt-3"><span><strong>Total</strong></span><strong id="total-nueva">$ 0</strong></div></form>';
       mNueva.mostrar('Nueva reserva', cuerpo,
         '<button type="button" class="btn-custom btn-custom-outline-secondary" data-bs-dismiss="modal">Cancelar</button><button type="button" class="btn-custom btn-custom-primary" id="guardar-nueva">Crear reserva</button>');
       totalNueva();
+      $('#n-estado').addEventListener('change', function () { $('#n-metodo-caja').hidden = Number(this.value) !== Datos.ESTADO.PAGADA; });
       $('#agregar-item').onclick = function (ev) { ev.preventDefault(); $('#items-nueva').insertAdjacentHTML('beforeend', filaItem()); totalNueva(); };
       $('#items-nueva').addEventListener('input', totalNueva);
       $('#items-nueva').addEventListener('click', function (ev) {
@@ -385,8 +481,12 @@
         // Si repitió una excursión se suman las personas (un solo ítem por excursión)
         var unidos = {}; items.forEach(function (i) { unidos[i.excursion_id] = (unidos[i.excursion_id] || 0) + i.personas; });
         items = Object.keys(unidos).map(function (k) { return { excursion_id: Number(k), personas: unidos[k] }; });
+        var pagada = Number($('#n-estado').value) === Datos.ESTADO.PAGADA;
         try {
-          Datos.crearPedido({ usuario_id: Number($('#n-cliente').value), creado_por: yo.id, estado_id: Number($('#n-estado').value), items: items });
+          Datos.crearPedido({
+            usuario_id: Number($('#n-cliente').value), creado_por: yo.id, estado_id: Number($('#n-estado').value), items: items,
+            pago: pagada ? { marca: $('#n-metodo').value } : null
+          });
         } catch (err) { aviso(err.message, 'error'); return; }
         mNueva.cerrar(); pintar(); aviso('Reserva creada');
       };
@@ -396,8 +496,17 @@
       var b = ev.target.closest('[data-acc]'); if (!b) return; ev.preventDefault();
       var id = Number(b.closest('tr').getAttribute('data-id')), p = Datos.buscar('pedidos', id), acc = b.getAttribute('data-acc');
       if (acc === 'ver') return verDetalle(p);
-      if (acc === 'cancelada' && !confirm('¿Cancelar la reserva ' + p.codigo + '? Los lugares quedan libres.')) return;
-      var nuevo = { pagada: Datos.ESTADO.PAGADA, cancelada: Datos.ESTADO.CANCELADA, pendiente: Datos.ESTADO.PENDIENTE }[acc];
+      if (acc === 'cobro') return abrirCobro(p, pintar);
+      if (acc === 'eliminar') {
+        if (!confirm('¿Eliminar la reserva cancelada ' + p.codigo + '?\n\nSe borra para siempre, junto con sus cobros y reembolsos. Los lugares ya estaban libres.')) return;
+        try { Datos.eliminar('pedidos', id); } catch (err) { return; }
+        pintar(); aviso('Reserva ' + p.codigo + ' eliminada'); return;
+      }
+      if (acc === 'cancelada') {
+        var cobrado = Datos.cobradoDe(p.id);
+        if (!confirm('¿Cancelar la reserva ' + p.codigo + '? Los lugares quedan libres.' + (cobrado > 0 ? '\n\nSe registrará un reembolso de ' + dinero(cobrado) + '.' : ''))) return;
+      }
+      var nuevo = { cancelada: Datos.ESTADO.CANCELADA, pendiente: Datos.ESTADO.PENDIENTE }[acc];
       // Al reabrir una reserva cancelada hay que revisar que sigan quedando lugares
       if (p.estado_id === Datos.ESTADO.CANCELADA) {
         var falta = Datos.itemsDe(p.id).filter(function (it) { return it.personas > Datos.libres(it.excursion_id); })[0];
@@ -406,10 +515,77 @@
       Datos.actualizar('pedidos', id, { estado_id: nuevo }); pintar(); aviso('Reserva ' + p.codigo + ': ' + Datos.nombreDe('estados_pedido', nuevo));
     });
     $('#btn-nueva').addEventListener('click', abrirNueva);
-    $('#buscar').addEventListener('input', pintar);
-    $('#filtro-estado').addEventListener('change', pintar);
+    // Elimina de una vez todas las reservas CANCELADAS que se ven con los filtros actuales
+    $('#btn-borrar-canceladas').addEventListener('click', function () {
+      var lista = filtradas().filter(function (p) { return p.estado_id === Datos.ESTADO.CANCELADA; });
+      if (!lista.length) { aviso('No hay reservas canceladas para eliminar con estos filtros', 'error'); return; }
+      if (!confirm('¿Eliminar ' + lista.length + (lista.length === 1 ? ' reserva cancelada' : ' reservas canceladas') + '?\n\nSe borran para siempre, junto con sus cobros y reembolsos.')) return;
+      var n = 0;
+      try { lista.forEach(function (p) { Datos.eliminar('pedidos', p.id); n++; }); } catch (err) { /* el aviso ya lo mostró datos.js */ }
+      pintar(); if (n) aviso(n + (n === 1 ? ' reserva eliminada' : ' reservas eliminadas'));
+    });
+    ['buscar'].forEach(function (id) { $('#' + id).addEventListener('input', pintar); });
+    ['filtro-estado', 'filtro-desde', 'filtro-hasta', 'filtro-excursion', 'filtro-cobro'].forEach(function (id) { $('#' + id).addEventListener('change', pintar); });
+    $('#filtro-limpiar').addEventListener('click', function () {
+      ['buscar', 'filtro-estado', 'filtro-desde', 'filtro-hasta', 'filtro-excursion', 'filtro-cobro'].forEach(function (id) { $('#' + id).value = ''; });
+      pintar();
+    });
     pintar();
     if (new URLSearchParams(location.search).get('nueva')) abrirNueva();
+  };
+
+  // ---------------------------------------------------------------
+  // COBROS: todos los movimientos de plata (cobros y reembolsos)
+  // ---------------------------------------------------------------
+  paginas.cobros = function () {
+    var pagos = Datos.tabla('pagos').filter(function (g) { return g.aprobado; });
+    var metodos = {};
+    pagos.forEach(function (g) { metodos[g.marca] = 1; });
+    $('#filtro-metodo').innerHTML = '<option value="">Todos los métodos</option>' + Object.keys(metodos).sort().map(function (m) {
+      return '<option value="' + esc(m) + '">' + esc(m) + '</option>';
+    }).join('');
+
+    function filtrados() {
+      var q = $('#buscar').value.trim().toLowerCase(), met = $('#filtro-metodo').value, tipo = $('#filtro-tipo').value;
+      var desde = $('#filtro-desde').value, hasta = $('#filtro-hasta').value;
+      return Datos.tabla('pagos').filter(function (g) { return g.aprobado; })
+        .sort(function (a, b) { return String(b.creado_en).localeCompare(String(a.creado_en)) || b.id - a.id; })
+        .filter(function (g) {
+          var p = Datos.buscar('pedidos', g.pedido_id);
+          var texto = ((p ? p.codigo : '') + ' ' + (p ? Datos.nombreUsuario(p.usuario_id) : '') + ' ' + (g.motivo || '')).toLowerCase();
+          if (q && texto.indexOf(q) < 0) return false;
+          if (met && g.marca !== met) return false;
+          if (tipo === 'cobro' && !(Number(g.monto) > 0)) return false;
+          if (tipo === 'reembolso' && !(Number(g.monto) < 0)) return false;
+          if (desde && dia(g.creado_en) < desde) return false;
+          if (hasta && dia(g.creado_en) > hasta) return false;
+          return true;
+        });
+    }
+
+    function pintar() {
+      var filas = filtrados(), cobrado = 0, reembolsado = 0;
+      filas.forEach(function (g) { var m = Number(g.monto); if (m > 0) cobrado += m; else reembolsado += -m; });
+      $('#tot-cobrado').textContent = dinero(cobrado);
+      $('#tot-reembolsado').textContent = dinero(reembolsado);
+      $('#tot-neto').textContent = dinero(cobrado - reembolsado);
+      $('#cuenta').textContent = filas.length + (filas.length === 1 ? ' movimiento' : ' movimientos');
+      $('#tabla-cuerpo').innerHTML = filas.length ? filas.map(function (g) {
+        var p = Datos.buscar('pedidos', g.pedido_id), m = Number(g.monto);
+        return '<tr><td>' + fecha(g.creado_en) + '</td><td class="table-order-id">' + esc(p ? p.codigo : '?') + '</td>' +
+          '<td>' + esc(p ? Datos.nombreUsuario(p.usuario_id) : '?') + '</td><td>' + textoPago(g) + '</td>' +
+          '<td>' + (m < 0 ? '<span class="badge-table failed">Reembolso</span>' : '<span class="badge-table success">Cobro</span>') + (g.motivo ? '<div class="texto-suave">' + esc(g.motivo) + '</div>' : '') + '</td>' +
+          '<td class="table-amount">' + montoHtml(m) + '</td></tr>';
+      }).join('') : sinDatos(6, 'No hay movimientos que coincidan');
+    }
+
+    ['buscar'].forEach(function (id) { $('#' + id).addEventListener('input', pintar); });
+    ['filtro-metodo', 'filtro-tipo', 'filtro-desde', 'filtro-hasta'].forEach(function (id) { $('#' + id).addEventListener('change', pintar); });
+    $('#filtro-limpiar').addEventListener('click', function () {
+      ['buscar', 'filtro-metodo', 'filtro-tipo', 'filtro-desde', 'filtro-hasta'].forEach(function (id) { $('#' + id).value = ''; });
+      pintar();
+    });
+    pintar();
   };
 
   // ---------------------------------------------------------------
@@ -446,7 +622,7 @@
       return '<form id="f-usuario" novalidate><div class="row g-3"><div class="col-md-6">' + campo('u-nombre', 'Nombre', 'text', u.nombre) + '</div>' +
         '<div class="col-md-6">' + campo('u-apellido', 'Apellido', 'text', u.apellido) + '</div>' +
         '<div class="col-md-6">' + campo('u-email', 'Email', 'email', u.email) + '</div>' +
-        '<div class="col-md-6">' + campo('u-pass', 'Contraseña', 'text', u.password, 'autocomplete="off"') + '</div>' +
+        '<div class="col-md-6">' + campo('u-pass', 'Contraseña', 'text', '', 'autocomplete="off" placeholder="' + (nuevo ? '' : 'Dejar vacío para no cambiarla') + '"') + '</div>' +
         '<div class="col-md-6">' + campo('u-tel', 'Teléfono', 'tel', u.telefono) + '</div>' +
         '<div class="col-md-6">' + campo('u-dni', 'DNI', 'text', u.dni, 'maxlength="8" inputmode="numeric"') + '</div>' +
         '<div class="col-md-6">' + selectHtml('u-ciudad', 'Ciudad', opcionesCiudades(true), u.ciudad_id || '') + '</div>' +
@@ -468,13 +644,14 @@
       if ($('#u-apellido').value.trim().length < 2) { marcarError('u-apellido', 'Obligatorio'); ok = false; }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { marcarError('u-email', 'Email inválido'); ok = false; }
       else if (Datos.tabla('usuarios').some(function (x) { return x.email.toLowerCase() === email && (!u || x.id !== u.id); })) { marcarError('u-email', 'Ya existe una cuenta con ese email'); ok = false; }
-      if ($('#u-pass').value.length < 4) { marcarError('u-pass', 'Mínimo 4 caracteres'); ok = false; }
+      if ((!u || $('#u-pass').value) && $('#u-pass').value.length < 4) { marcarError('u-pass', 'Mínimo 4 caracteres'); ok = false; }
       if (dni && (dni.length < 7 || dni.length > 8)) { marcarError('u-dni', '7 u 8 números'); ok = false; }
       if (!ok) return;
       var d = {
-        nombre: $('#u-nombre').value.trim(), apellido: $('#u-apellido').value.trim(), email: email, password: $('#u-pass').value,
+        nombre: $('#u-nombre').value.trim(), apellido: $('#u-apellido').value.trim(), email: email,
         telefono: $('#u-tel').value.trim(), dni: dni, ciudad_id: $('#u-ciudad').value ? Number($('#u-ciudad').value) : null
       };
+      if ($('#u-pass').value) d.password = $('#u-pass').value;   // vacío al editar = se conserva la actual
       if (!u || u.id !== yo.id) { d.rol_id = Number($('#u-rol').value); d.activo = $('#u-activo').checked ? 1 : 0; }
       if (u) Datos.actualizar('usuarios', u.id, d); else Datos.insertar('usuarios', d);
       m.cerrar(); pintar(); aviso(u ? 'Usuario actualizado' : 'Usuario creado');
