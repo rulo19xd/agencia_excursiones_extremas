@@ -63,6 +63,15 @@
     return new URL('../api/', s ? s.src : location.href).href;
   })();
 
+  // Dirección de una imagen guardada en la base de datos (la sirve api/imagen.php)
+  // ancho (opcional): 400, 800 o 1280 pide una versión liviana; sin ancho, la foto original.
+  function urlImagenDb(id, ancho) { return BASE + 'imagen.php?id=' + encodeURIComponent(id) + (ancho ? '&w=' + ancho : ''); }
+
+  // Foto de una excursión en el ancho pedido: de la base (con su versión liviana) o, si no tiene, la ruta del sitio.
+  function imagenDe(ex, ancho) {
+    return ex && ex.imagen_id ? urlImagenDb(ex.imagen_id, ancho) : ((ex && ex.imagen) || '');
+  }
+
   // Datos viejos del simulador: ya no se usan, se limpian para no dejar basura en el navegador
   try { localStorage.removeItem('vertigo_db'); localStorage.removeItem('vertigo_sesion'); } catch (e) { /* ignorar */ }
 
@@ -131,6 +140,15 @@
       var r = pedir('snapshot.php');
       var nueva = vacio();
       Object.keys(nueva).forEach(function (t) { if (Array.isArray(r.db[t])) nueva[t] = r.db[t]; });
+      // Las fotos de las excursiones están DENTRO de la base (tabla imagenes). El servidor manda solo el
+      // imagen_id; acá se arma la dirección completa (api/imagen.php?id=...) en el campo "imagen", así
+      // todas las pantallas la usan como cualquier otra ruta. La ruta original (por si la excursión usa una
+      // imagen del sitio) queda en ruta_imagen.
+      nueva.excursiones = nueva.excursiones.map(function (e) {
+        e.ruta_imagen = e.imagen;
+        if (e.imagen_id) e.imagen = urlImagenDb(e.imagen_id);
+        return e;
+      });
       // el servidor guarda 'Pagado'/'Cancelado'...; las pantallas esperan 'pagada'/'cancelada'
       nueva.estados_pedido = nueva.estados_pedido.map(function (e) {
         return { id: e.id, nombre: NOMBRE_ESTADO[e.id] || String(e.nombre).toLowerCase() };
@@ -309,12 +327,15 @@
     },
 
     // ----- imágenes (solo administrador) -----
-    // Sube un archivo (File) a images/excursiones/ y devuelve la ruta para guardar en la excursión.
+    // Dirección completa de una imagen guardada en la base de datos (por su id)
+    urlImagenDb: urlImagenDb,
+    imagenDe: imagenDe,
+
+    // Sube un archivo (File) a la base de datos (tabla imagenes) y devuelve { id, nombre, tamano }.
+    // El id se guarda en la excursión (campo imagen_id).
     subirImagen: function (archivo) {
       var f = new FormData(); f.append('imagen', archivo);
-      var r;
-      try { r = pedir('subir_imagen.php', f); } catch (e) { throw new Error(e.message); }
-      return r.ruta;
+      try { return pedir('subir_imagen.php', f); } catch (e) { throw new Error(e.message); }
     }
   };
 

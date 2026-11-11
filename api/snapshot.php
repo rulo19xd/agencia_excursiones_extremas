@@ -33,7 +33,7 @@ $db['provincias']      = tipar_lista('provincias', consultar('SELECT id, nombre,
 $db['ciudades']        = tipar_lista('ciudades', consultar('SELECT id, nombre, provincia_id FROM ciudades ORDER BY id'));
 
 // ----- excursiones -----
-$colsEx = 'id, nombre, descripcion, tipo_excursion_id, ciudad_id, precio, capacidad, fecha_salida, imagen, activa';
+$colsEx = 'id, nombre, descripcion, tipo_excursion_id, ciudad_id, precio, capacidad, fecha_salida, imagen, imagen_id, activa';
 if ($esAdmin) {
     $filas = consultar("SELECT $colsEx FROM excursiones ORDER BY id");
 } else {

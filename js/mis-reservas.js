@@ -1,9 +1,22 @@
+/*
+ * DOCUMENTACIÓN - mis-reservas.js (página mis-reservas.html)
+ *
+ * Muestra al cliente logueado SUS pedidos (tabla pedidos filtrada por usuario_id), con las
+ * excursiones de cada uno (pedido_items), el estado y cómo se pagó (pagos).
+ * Si no hay sesión, redirige a login.html y vuelve acá al ingresar.
+ *
+ * CANCELAR: si todas las salidas del pedido están a más de DIAS_MINIMOS_PARA_CANCELAR día(s),
+ * aparece el botón; el servidor (api/cancelar.php) vuelve a verificarlo y registra el reembolso.
+ *
+ * CUANDO HAYA BACKEND: la lista sale de una consulta SQL por usuario (WHERE usuario_id = ?).
+ */
 (function () {
   'use strict';
 
   var fmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
-
+  // Las fechas sin hora (fecha de salida, "2026-11-08") se arman con año/mes/día locales: new Date("2026-11-08")
+  // las toma como medianoche UTC y en Argentina mostraría el día anterior.
   function fecha(iso) {
     var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso));
     var d = m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date(iso);
@@ -20,7 +33,7 @@
     var u = SesionSitio.exigirLogin();
     if (!u) return;
 
-   
+    // Un solo oyente para todos los botones "Cancelar reserva"
     if (!enlazado) {
       enlazado = true;
       raiz.addEventListener('click', function (e) {
@@ -52,7 +65,7 @@
       var items = Datos.itemsDe(p.id).map(function (it) {
         var ex = Datos.buscar('excursiones', it.excursion_id);
         return '<li class="cart-item">' +
-          '<div class="cart-item-img" style="background-image:url(\'' + esc(ex ? ex.imagen : '') + '\')"></div>' +
+          '<div class="cart-item-img" style="background-image:url(\'' + esc(ex ? Datos.imagenDe(ex, 400) : '') + '\')"></div>' +
           '<div class="cart-item-info"><strong>' + esc(ex ? ex.nombre : 'Excursión eliminada') + '</strong>' +
           '<small>' + it.personas + (it.personas === 1 ? ' persona' : ' personas') + ' × ' + fmt.format(it.precio_unitario) +
           (ex && ex.fecha_salida ? ' · Salida: ' + fecha(ex.fecha_salida) : '') + '</small></div>' +
@@ -91,4 +104,3 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
- 

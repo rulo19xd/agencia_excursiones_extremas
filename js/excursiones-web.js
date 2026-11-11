@@ -93,7 +93,7 @@
   function tarjeta(ex, o) {
     var libres = Datos.libres(ex.id);
     var cupo = libres === 0 ? 'Agotada' : (libres <= 5 ? '¡Últimos ' + libres + ' lugares!' : libres + ' lugares libres');
-    var img = ex.imagen || 'images/destination-1.jpg';
+    var img = Datos.imagenDe(ex, 400) || 'images/destination-1.jpg';   // tarjetas: miniatura liviana (la foto original solo se baja en el detalle)
     o.enlace = 'excursion.html?id=' + ex.id;
     var lug = lugar(ex);
     var tipo = Datos.nombreDe('tipos_excursion', ex.tipo_excursion_id);

@@ -28,6 +28,14 @@
     <link rel="stylesheet" href="css/icomoon.css">
     <!-- DOC: style.css = hoja de estilos PRINCIPAL de la plantilla (colores, tipografías, componentes). Para cambiar el aspecto se edita este archivo; el color de marca es #f85959 (rojo coral). Al comienzo del archivo hay una guía de contenidos. -->
     <link rel="stylesheet" href="css/style.css">
+    <style>
+  #det-hero h1, #det-hero .breadcrumbs, #det-hero .breadcrumbs a, #det-hero .breadcrumbs span {
+    color: #fff;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000,
+                 -1px 0 0 #000, 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000,
+                 0 3px 10px rgba(0,0,0,.7);
+  }
+</style>
   </head>
   <body>
     
@@ -153,11 +161,7 @@
   <script src="js/aos.js"></script>
   <script src="js/jquery.animateNumber.min.js"></script>
   <script src="js/bootstrap-datepicker.js"></script>
-  <script src="js/jquery.timepicker.min.js"></script>
   <script src="js/scrollax.min.js"></script>
-  <!-- DOC: MAPA DE GOOGLE: solo se usa en contact.html (div id="map"). La clave (key=) es de la plantilla: para producción hay que reemplazarla por una propia, y conviene quitar estas dos líneas de las páginas que no tienen mapa (generan un error en consola). -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
-  <script src="js/google-map.js"></script>
   <!-- DOC: main.js: inicializa todos los plugins de la plantilla (ver comentarios dentro de ese archivo). carrito.js (debajo) es el carrito de compras, propio del proyecto. -->
   <!-- DOC: datos.js (conexión con la base) y excursiones-web.js (dibuja el detalle) se cargan ANTES de main.js: así las tarjetas ya existen cuando main.js activa las animaciones. -->
   <script src="js/datos.js"></script>

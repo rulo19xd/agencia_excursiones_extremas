@@ -121,7 +121,7 @@ function esquema_tipos(): array
         'paises'          => ['i' => ['id']],
         'provincias'      => ['i' => ['id', 'pais_id']],
         'ciudades'        => ['i' => ['id', 'provincia_id']],
-        'excursiones'     => ['i' => ['id', 'tipo_excursion_id', 'ciudad_id', 'capacidad', 'activa'], 'f' => ['precio']],
+        'excursiones'     => ['i' => ['id', 'tipo_excursion_id', 'ciudad_id', 'capacidad', 'activa', 'imagen_id'], 'f' => ['precio']],
         'usuarios'        => ['i' => ['id', 'ciudad_id', 'rol_id', 'activo']],
         'pedidos'         => ['i' => ['id', 'usuario_id', 'creado_por', 'estado_id'], 'f' => ['total'], 'd' => ['creado_en']],
         'pedido_items'    => ['i' => ['id', 'pedido_id', 'excursion_id', 'personas'], 'f' => ['precio_unitario']],

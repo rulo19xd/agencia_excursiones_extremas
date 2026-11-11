@@ -102,6 +102,12 @@ function validar_excursion(array $d, ?array $actual): array
     if (mb_strlen($img) > 255) {
         throw new ErrorNegocio('La ruta de la imagen es demasiado larga.');
     }
+    // Imagen guardada en la base (tabla imagenes): null = sin imagen subida (se usa la ruta de arriba)
+    $imgId = dato($d, $actual, 'imagen_id', null);
+    $imgId = ($imgId === null || $imgId === '' || (int)$imgId <= 0) ? null : (int)$imgId;
+    if ($imgId !== null && valor('SELECT 1 FROM imagenes WHERE id = :id', [':id' => $imgId]) === false) {
+        throw new ErrorNegocio('La imagen elegida no existe. Volvé a subirla.');
+    }
 
     return [
         'nombre'            => $nombre,
@@ -112,6 +118,7 @@ function validar_excursion(array $d, ?array $actual): array
         'capacidad'         => $cap,
         'fecha_salida'      => $fecha,
         'imagen'            => $img === '' ? null : $img,
+        'imagen_id'         => $imgId,
         'activa'            => ((int)dato($d, $actual, 'activa', 1)) ? 1 : 0,
     ];
 }
@@ -223,6 +230,19 @@ function validar_catalogo(string $tabla, array $d, ?array $actual): array
     return $cols;
 }
 
+// Borra una imagen de la tabla imagenes si ninguna excursión la usa (al reemplazarla o borrar la excursión).
+function limpiar_imagen(?int $imagenId): void
+{
+    global $conexion;
+    if ($imagenId === null || $imagenId <= 0) {
+        return;
+    }
+    $conexion->prepare(
+        'DELETE FROM imagenes WHERE id = :id
+            AND id NOT IN (SELECT imagen_id FROM excursiones WHERE imagen_id IS NOT NULL)'
+    )->execute([':id' => $imagenId]);
+}
+
 // ---------------------------------------------------------------------
 // Ejecución
 // ---------------------------------------------------------------------
@@ -265,7 +285,9 @@ try {
                     : 'No se puede eliminar: tiene reservas canceladas. Eliminalas desde Reservas y probá de nuevo.', 409);
             }
         }
+        $imagenDeLaExcursion = $tabla === 'excursiones' ? ((leer_cruda('excursiones', $id)['imagen_id'] ?? null) ?: null) : null;
         $conexion->prepare("DELETE FROM `$tabla` WHERE id = :id")->execute([':id' => $id]);
+        limpiar_imagen($imagenDeLaExcursion !== null ? (int)$imagenDeLaExcursion : null);
         responder(['ok' => true]);
     }
 
@@ -314,6 +336,10 @@ try {
                 $conexion->rollBack();
             }
             throw $e;
+        }
+        // Si la excursión cambió de imagen, la anterior (si nadie más la usa) se borra de la base.
+        if ($tabla === 'excursiones' && !empty($actual['imagen_id']) && (int)$actual['imagen_id'] !== (int)($cols['imagen_id'] ?? 0)) {
+            limpiar_imagen((int)$actual['imagen_id']);
         }
     }
 

@@ -43,6 +43,8 @@
     return d.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' });
   }
   // Las rutas de imagen se guardan relativas al sitio ("images/x.jpg"); desde dashboard/ hay que subir un nivel (../)
+  // Foto de una excursión para las miniaturas del panel (versión liviana si está en la base)
+  function fotoDe(e) { return e.imagen_id ? Datos.imagenDe(e, 400) : urlImagen(e.imagen); }
   function urlImagen(r) { return !r ? '' : (/^(https?:|data:)/.test(r) ? r : '../' + r); }
 
   // Aviso flotante abajo a la derecha
@@ -259,7 +261,7 @@
       $('#cuenta').textContent = filas.length + (filas.length === 1 ? ' excursión' : ' excursiones');
       $('#tabla-cuerpo').innerHTML = filas.length ? filas.map(function (e) {
         var oc = Datos.ocupados(e.id);
-        return '<tr data-id="' + e.id + '"><td><div class="table-user-cell"><div class="mini-foto" style="background-image:url(\'' + esc(urlImagen(e.imagen)) + '\')"></div>' +
+        return '<tr data-id="' + e.id + '"><td><div class="table-user-cell"><div class="mini-foto" style="background-image:url(\'' + esc(fotoDe(e)) + '\')"></div>' +
           '<div><div class="table-user-name">' + esc(e.nombre) + '</div><div class="table-user-sub">' + esc(Datos.ciudadCompleta(e.ciudad_id)) + '</div></div></div></td>' +
           '<td>' + esc(Datos.nombreDe('tipos_excursion', e.tipo_excursion_id)) + '</td><td>' + fecha(e.fecha_salida) + '</td>' +
           '<td class="table-amount">' + dinero(e.precio) + '</td>' +
@@ -282,29 +284,40 @@
         '<div class="col-md-4">' + campo('f-precio', 'Precio por persona ($)', 'number', e.precio, 'min="1" step="1"') + '</div>' +
         '<div class="col-md-4">' + campo('f-capacidad', 'Capacidad (lugares)', 'number', e.capacidad, 'min="1" step="1"') + '</div>' +
         '<div class="col-md-4"><div class="campo"><label class="form-label-custom">Estado</label><label class="form-check-custom mt-2"><input class="form-check-input-custom" type="checkbox" id="f-activa"' + (e.activa ? ' checked' : '') + '> <span class="form-check-label">Visible en el sitio</span></label></div></div>' +
-        '<div class="col-12">' + campo('f-imagen', 'Imagen (ruta dentro del sitio)', 'text', e.imagen, 'list="lista-imagenes" placeholder="images/destination-1.jpg"') +
-        '<datalist id="lista-imagenes">' + IMAGENES.map(function (i) { return '<option value="' + i + '">'; }).join('') + '</datalist>' +
-        // Subir una imagen propia: se guarda en images/excursiones/ y su ruta se completa sola arriba
-        '<div class="d-flex align-items-center gap-3 mt-2"><div id="f-vista" class="mini-foto" style="width:64px;height:64px;background-image:url(\'' + esc(urlImagen(e.imagen)) + '\')"></div>' +
-        '<div class="flex-grow-1"><label class="form-label-custom" for="f-archivo">O subir una imagen (JPG, PNG, WEBP o GIF, máx. 5 MB)</label>' +
-        '<input type="file" class="form-control-custom" id="f-archivo" accept="image/jpeg,image/png,image/webp,image/gif"><div class="msg-error" hidden></div></div></div>' +
+        // Foto de la excursión: se sube a la BASE DE DATOS (tabla imagenes) y la excursión guarda su id.
+        '<div class="col-12"><label class="form-label-custom">Foto</label>' +
+        '<div class="d-flex align-items-center gap-3"><div id="f-vista" class="mini-foto" style="width:72px;height:72px;background-image:url(\'' + esc(fotoDe(e)) + '\')"></div>' +
+        '<div class="flex-grow-1"><input type="file" class="form-control-custom" id="f-archivo" accept="image/jpeg,image/png,image/webp,image/gif"><div class="msg-error" hidden></div>' +
+        '<small class="texto-suave">JPG, PNG, WEBP o GIF. Se guarda en la base de datos; las fotos grandes se achican solas.</small> ' +
+        '<a href="#" id="f-quitar-img"' + (e.imagen_id ? '' : ' hidden') + '>Quitar foto subida</a></div></div>' +
+        '<div class="mt-2">' + campo('f-imagen', 'O usar una imagen del sitio (ruta, opcional)', 'text', (e.ruta_imagen !== undefined ? e.ruta_imagen : e.imagen) || '', 'list="lista-imagenes" placeholder="images/destination-1.jpg"') +
+        '<datalist id="lista-imagenes">' + IMAGENES.map(function (i) { return '<option value="' + i + '">'; }).join('') + '</datalist></div>' +
         '</div></div></form>';
     }
+
+    var imagenId = null;   // foto de la base que tiene asignada el formulario abierto
 
     function abrirFormulario(e) {
       var pie = '<button type="button" class="btn-custom btn-custom-outline-secondary" data-bs-dismiss="modal">Cancelar</button>' +
         '<button type="button" class="btn-custom btn-custom-primary" id="guardar-excursion">Guardar</button>';
       m.mostrar(e ? 'Editar excursión' : 'Nueva excursión', formulario(e), pie);
+      // imagenId = foto de la base asignada a esta excursión (null = usa la ruta de texto o la imagen por defecto)
+      imagenId = e && e.imagen_id ? e.imagen_id : null;
       $('#guardar-excursion').onclick = function () { guardar(e); };
-      var vista = function () { $('#f-vista').style.backgroundImage = "url('" + urlImagen($('#f-imagen').value.trim()).replace(/'/g, '%27') + "')"; };
+      var vista = function () {
+        var url = imagenId ? Datos.urlImagenDb(imagenId, 400) : urlImagen($('#f-imagen').value.trim());
+        $('#f-vista').style.backgroundImage = "url('" + String(url).replace(/'/g, '%27') + "')";
+        $('#f-quitar-img').hidden = !imagenId;
+      };
       $('#f-imagen').addEventListener('input', vista);
+      $('#f-quitar-img').addEventListener('click', function (ev) { ev.preventDefault(); imagenId = null; $('#f-archivo').value = ''; vista(); });
       $('#f-archivo').addEventListener('change', function () {
         var arch = this.files && this.files[0]; if (!arch) return;
         limpiarErrores($('#f-archivo').parentNode);
         if (arch.size > 5 * 1024 * 1024) { marcarError('f-archivo', 'La imagen supera los 5 MB'); this.value = ''; return; }
         try {
-          $('#f-imagen').value = Datos.subirImagen(arch);
-          vista(); aviso('Imagen subida');
+          imagenId = Datos.subirImagen(arch).id;
+          vista(); aviso('Foto subida: se guarda al apretar Guardar');
         } catch (err) { marcarError('f-archivo', err.message); this.value = ''; }
       });
     }
@@ -321,7 +334,7 @@
       if (!ok) return;
       var datos = {
         nombre: nombre, descripcion: $('#f-desc').value.trim(), tipo_excursion_id: Number($('#f-tipo').value), ciudad_id: Number($('#f-ciudad').value),
-        precio: precio, capacidad: cap, fecha_salida: $('#f-fecha').value || null, imagen: $('#f-imagen').value.trim(), activa: $('#f-activa').checked ? 1 : 0
+        precio: precio, capacidad: cap, fecha_salida: $('#f-fecha').value || null, imagen: $('#f-imagen').value.trim(), imagen_id: imagenId, activa: $('#f-activa').checked ? 1 : 0
       };
       if (e) Datos.actualizar('excursiones', e.id, datos); else Datos.insertar('excursiones', datos);
       m.cerrar(); pintar(); aviso(e ? 'Excursión actualizada' : 'Excursión creada');

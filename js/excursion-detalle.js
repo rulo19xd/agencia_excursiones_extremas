@@ -70,7 +70,8 @@
 
   var tipo = Datos.nombreDe('tipos_excursion', ex.tipo_excursion_id);
   var libres = Datos.libres(ex.id);
-  var img = ex.imagen || 'images/destination-1.jpg';
+  var img = Datos.imagenDe(ex, 1280) || 'images/destination-1.jpg';           // pantalla de detalle: versión grande
+  var imgChica = Datos.imagenDe(ex, 400) || 'images/destination-1.jpg';      // carrito: miniatura
   var yaSalio = ex.fecha_salida < hoyISO();
   var reservable = !!ex.activa && !yaSalio && libres > 0;
 
@@ -95,7 +96,7 @@
       '<p class="mb-3">Total: <strong id="det-total">' + dinero(ex.precio) + '</strong></p>' +
       '<button type="button" class="btn btn-primary btn-block py-3" id="det-agregar"' +
         ' data-cart-add="' + esc(Datos.slug(ex.nombre)) + '" data-nombre="' + esc(ex.nombre) + '"' +
-        ' data-precio="' + Math.round(ex.precio) + '" data-imagen="' + esc(img) + '" data-lugar="' + esc(lugarCorto(ex)) + '"' +
+        ' data-precio="' + Math.round(ex.precio) + '" data-imagen="' + esc(imgChica) + '" data-lugar="' + esc(lugarCorto(ex)) + '"' +
         ' data-personas="1">Agregar al carrito</button>'
     : '<button type="button" class="btn btn-secondary btn-block py-3" disabled>' + (libres === 0 ? 'Agotada' : 'No disponible') + '</button>';
 
